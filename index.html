@@ -134,6 +134,11 @@
       return saved ? JSON.parse(saved) : defaultMenuCategories;
     };
 
+    const getRefr Brands = () => {
+      const saved = localStorage.getItem('raiz_refrig_brands');
+      return saved ? JSON.parse(saved) : ['Coca-Cola', 'Pepsi', 'Fruk'];
+    };
+
     function Home({ setRoute, setTableNumber }) {
       const [adminPassword, setAdminPassword] = useState('');
       const [error, setError] = useState('');
@@ -162,6 +167,7 @@
 
     function ClientMenu({ tableNumber, setRoute }) {
       const [menuData] = useState(getMenu());
+      const [refrigBrands, setRefrigBrands] = useState(getRefr Brands);
       const [cart, setCart] = useState([]);
       const [orderSent, setOrderSent] = useState(false);
       const [showCartModal, setShowCartModal] = useState(false);
@@ -175,14 +181,14 @@
       const [drinkCopos, setDrinkCopos] = useState(1);
       const [drinkGelo, setDrinkGelo] = useState('Com Gelo');
       const [drinkLimao, setDrinkLimao] = useState('Com Limão');
-      const [drinkOpcao, setDrinkOpcao] = useState('Coca-Cola');
+      const [drinkOpcao, setDrinkOpcao] = useState(refrigBrands[0] || 'Coca-Cola');
 
       const handleOpenItem = (item, catIdName) => {
         if (catIdName === 'xis' || catIdName === 'mini-xis') { setFoodModalType('xis'); setFoodModalItem(item); setSelectedAddons([]); setItemObservation(''); }
         else if (catIdName === 'hot-dog') { setFoodModalType('hotdog'); setFoodModalItem(item); setSelectedAddons([]); setItemObservation(''); }
         else if (catIdName === 'bebidas') {
           if (item.name.toLowerCase().includes('refri')) {
-            setDrinkModalItem(item); setDrinkOpcao('Coca-Cola'); setDrinkCopos(1); setDrinkGelo('Com Gelo'); setDrinkLimao('Com Limão');
+            setDrinkModalItem(item); setDrinkOpcao(refrigBrands[0] || 'Coca-Cola'); setDrinkCopos(1); setDrinkGelo('Com Gelo'); setDrinkLimao('Com Limão');
           } else if (item.name.toLowerCase().includes('água')) {
             setDrinkModalItem(item); setDrinkOpcao('Com Gás'); setDrinkCopos(1); setDrinkGelo('Com Gelo'); setDrinkLimao('Com Limão');
           } else {
@@ -309,7 +315,7 @@
                     </label>
                     <div className="grid grid-cols-3 gap-2">
                       {drinkModalItem.name.toLowerCase().includes('refri') ? 
-                        ['Coca-Cola', 'Pepsi', 'Fruk'].map(m => ( <button key={m} onClick={() => setDrinkOpcao(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${drinkOpcao === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))
+                        refrigBrands.map(m => ( <button key={m} onClick={() => setDrinkOpcao(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${drinkOpcao === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))
                         :
                         ['Com Gás', 'Sem Gás'].map(opt => ( <button key={opt} onClick={() => setDrinkOpcao(opt)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${drinkOpcao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))
                       }
@@ -385,6 +391,8 @@
       const [tables, setTables] = useState(() => JSON.parse(localStorage.getItem('raiz_tables')) || []);
       const [newTableNumber, setNewTableNumber] = useState('');
       const [menuData, setMenuData] = useState(getMenu());
+      const [refrigBrands, setRefrigBrands] = useState(getRefr Brands);
+      const [newBrandName, setNewBrandName] = useState('');
       const [editItem, setEditItem] = useState(null);
       const [historyDate, setHistoryDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -403,7 +411,7 @@
       const [wCopos, setWCopos] = useState(1);
       const [wGelo, setWGelo] = useState('Com Gelo');
       const [wLimao, setWLimao] = useState('Com Limão');
-      const [wOpcao, setWOpcao] = useState('Coca-Cola');
+      const [wOpcao, setWOpcao] = useState(refrigBrands[0] || 'Coca-Cola');
 
       useEffect(() => {
         const timer = setInterval(() => { setNow(Date.now()); setOrders(JSON.parse(localStorage.getItem('raiz_orders')) || []); }, 1000);
@@ -459,12 +467,26 @@
       const handleDeleteTable = (num) => { const updated = tables.filter(t => t.number !== num); setTables(updated); localStorage.setItem('raiz_tables', JSON.stringify(updated)); };
       const saveProductEdit = () => { const newMenu = [...menuData]; newMenu[editItem.catIdx].items[editItem.itemIdx] = editItem.data; setMenuData(newMenu); localStorage.setItem('raiz_menu', JSON.stringify(newMenu)); setEditItem(null); };
 
+      const handleAddBrand = () => {
+        if (!newBrandName.trim()) return;
+        const updated = [...refrigBrands, newBrandName.trim()];
+        setRefrigBrands(updated);
+        localStorage.setItem('raiz_refrig_brands', JSON.stringify(updated));
+        setNewBrandName('');
+      };
+
+      const handleDeleteBrand = (brandName) => {
+        const updated = refrigBrands.filter(b => b !== brandName);
+        setRefrigBrands(updated);
+        localStorage.setItem('raiz_refrig_brands', JSON.stringify(updated));
+      };
+
       const handleOpenWItem = (item, catIdName) => {
         if (catIdName === 'xis' || catIdName === 'mini-xis') { setWFoodType('xis'); setWFoodModal(item); setWAddons([]); setWObs(''); }
         else if (catIdName === 'hot-dog') { setWFoodType('hotdog'); setWFoodModal(item); setWAddons([]); setWObs(''); }
         else if (catIdName === 'bebidas') {
           if (item.name.toLowerCase().includes('refri')) {
-            setWDrinkModal(item); setWOpcao('Coca-Cola'); setWCopos(1); setWGelo('Com Gelo'); setWLimao('Com Limão');
+            setWDrinkModal(item); setWOpcao(refrigBrands[0] || 'Coca-Cola'); setWCopos(1); setWGelo('Com Gelo'); setWLimao('Com Limão');
           } else if (item.name.toLowerCase().includes('água')) {
             setWDrinkModal(item); setWOpcao('Com Gás'); setWCopos(1); setWGelo('Com Gelo'); setWLimao('Com Limão');
           } else {
@@ -687,7 +709,7 @@
                         </label>
                         <div className="grid grid-cols-3 gap-2">
                           {wDrinkModal.name.toLowerCase().includes('refri') ? 
-                            ['Coca-Cola', 'Pepsi', 'Fruk'].map(m => ( <button key={m} onClick={() => setWOpcao(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${wOpcao === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))
+                            refrigBrands.map(m => ( <button key={m} onClick={() => setWOpcao(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${wOpcao === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))
                             :
                             ['Com Gás', 'Sem Gás'].map(opt => ( <button key={opt} onClick={() => setWOpcao(opt)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${wOpcao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))
                           }
@@ -794,21 +816,42 @@
           )}
 
           {activeTab === 'produtos' && (
-            <div className="max-w-3xl mx-auto bg-[#1e1e1e] p-6 rounded-xl">
-              <h2 className="text-xl font-bold border-b border-gray-700 pb-2 mb-4 text-white">Gestão do Cardápio</h2>
+            <div className="max-w-3xl mx-auto bg-[#1e1e1e] p-6 rounded-xl space-y-8">
               
-              {menuData.map((cat, catIdx) => (
-                <div key={catIdx} className="mb-6"><h3 className="text-lg font-bold text-[#d32f2f] mb-3">{cat.title}</h3>
-                  <div className="space-y-3">
-                    {cat.items.map((item, itemIdx) => (
-                      <div key={item.id} className="bg-[#2a2a2a] p-3 rounded-lg flex justify-between items-center border border-gray-700">
-                        <div><p className="font-bold text-white">{item.name}</p><p className="text-[#d32f2f] font-bold text-sm">R$ {Number(item.price).toFixed(2)}</p></div>
-                        <button onClick={() => setEditItem({ catIdx, itemIdx, data: {...item} })} className="bg-gray-700 hover:bg-gray-600 p-2 rounded text-white"><IconEdit /></button>
-                      </div>
-                    ))}
-                  </div>
+              {/* GESTÃO DE MARCAS DE REFRIGERANTE */}
+              <div className="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700">
+                <h2 className="text-xl font-bold text-white mb-2">Gerenciar Marcas de Refrigerante</h2>
+                <p className="text-xs text-gray-400 mb-4">Adicione ou remova as marcas que aparecem ao pedir refrigerantes.</p>
+                <div className="flex gap-2 mb-4">
+                  <input type="text" placeholder="Ex: Sprite, Guaraná..." value={newBrandName} onChange={e => setNewBrandName(e.target.value)} className="flex-1 bg-[#121212] text-white border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-[#d32f2f]" />
+                  <button onClick={handleAddBrand} className="bg-[#d32f2f] hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg">Adicionar</button>
                 </div>
-              ))}
+                <div className="flex flex-wrap gap-2">
+                  {refrigBrands.map(brand => (
+                    <div key={brand} className="bg-[#1e1e1e] border border-gray-700 px-3 py-2 rounded-lg flex items-center gap-2">
+                      <span className="font-bold text-sm">{brand}</span>
+                      <button onClick={() => handleDeleteBrand(brand)} className="text-red-400 hover:text-red-300 font-bold">&times;</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* GESTÃO DE PRODUTOS DO CARDÁPIO */}
+              <div>
+                <h2 className="text-xl font-bold border-b border-gray-700 pb-2 mb-4 text-white">Gestão do Cardápio</h2>
+                {menuData.map((cat, catIdx) => (
+                  <div key={catIdx} className="mb-6"><h3 className="text-lg font-bold text-[#d32f2f] mb-3">{cat.title}</h3>
+                    <div className="space-y-3">
+                      {cat.items.map((item, itemIdx) => (
+                        <div key={item.id} className="bg-[#2a2a2a] p-3 rounded-lg flex justify-between items-center border border-gray-700">
+                          <div><p className="font-bold text-white">{item.name}</p><p className="text-[#d32f2f] font-bold text-sm">R$ {Number(item.price).toFixed(2)}</p></div>
+                          <button onClick={() => setEditItem({ catIdx, itemIdx, data: {...item} })} className="bg-gray-700 hover:bg-gray-600 p-2 rounded text-white"><IconEdit /></button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
 
               {editItem && (
                 <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
