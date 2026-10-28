@@ -818,24 +818,6 @@
           {activeTab === 'produtos' && (
             <div className="max-w-3xl mx-auto bg-[#1e1e1e] p-6 rounded-xl space-y-8">
               
-              {/* GESTÃO DE MARCAS DE REFRIGERANTE */}
-              <div className="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700">
-                <h2 className="text-xl font-bold text-white mb-2">Gerenciar Marcas de Refrigerante</h2>
-                <p className="text-xs text-gray-400 mb-4">Adicione ou remova as marcas que aparecem ao pedir refrigerantes.</p>
-                <div className="flex gap-2 mb-4">
-                  <input type="text" placeholder="Ex: Sprite, Guaraná..." value={newBrandName} onChange={e => setNewBrandName(e.target.value)} className="flex-1 bg-[#121212] text-white border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-[#d32f2f]" />
-                  <button onClick={handleAddBrand} className="bg-[#d32f2f] hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg">Adicionar</button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {refrigBrands.map(brand => (
-                    <div key={brand} className="bg-[#1e1e1e] border border-gray-700 px-3 py-2 rounded-lg flex items-center gap-2">
-                      <span className="font-bold text-sm">{brand}</span>
-                      <button onClick={() => handleDeleteBrand(brand)} className="text-red-400 hover:text-red-300 font-bold">&times;</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               {/* GESTÃO DE PRODUTOS DO CARDÁPIO */}
               <div>
                 <h2 className="text-xl font-bold border-b border-gray-700 pb-2 mb-4 text-white">Gestão do Cardápio</h2>
@@ -851,6 +833,24 @@
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* GESTÃO DE MARCAS DE REFRIGERANTE (MOVIDA PARA O FINAL) */}
+              <div className="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700">
+                <h2 className="text-xl font-bold text-white mb-2">Gerenciar Marcas de Refrigerante</h2>
+                <p className="text-xs text-gray-400 mb-4">Adicione ou remova as marcas que aparecem ao pedir refrigerantes.</p>
+                <div className="flex flex-col sm:flex-row gap-2 mb-4">
+                  <input type="text" placeholder="Ex: Sprite, Guaraná..." value={newBrandName} onChange={e => setNewBrandName(e.target.value)} className="flex-1 bg-[#121212] text-white border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-[#d32f2f]" />
+                  <button onClick={handleAddBrand} className="bg-[#d32f2f] hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg shrink-0">Adicionar</button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {refrigBrands.map(brand => (
+                    <div key={brand} className="bg-[#1e1e1e] border border-gray-700 px-3 py-2 rounded-lg flex items-center gap-2">
+                      <span className="font-bold text-sm">{brand}</span>
+                      <button onClick={() => handleDeleteBrand(brand)} className="text-red-400 hover:text-red-300 font-bold">&times;</button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {editItem && (
