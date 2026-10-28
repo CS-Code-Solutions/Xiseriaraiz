@@ -372,11 +372,13 @@
         return String(o.table).toLowerCase().includes(cashFilter.toLowerCase());
       });
 
+      // Cozinha dá como entregue (muda status para concluido)
       const completeOrder = (id) => {
         const updated = (JSON.parse(localStorage.getItem('raiz_orders')) || []).map(o => o.id === id ? { ...o, status: 'concluido' } : o);
         localStorage.setItem('raiz_orders', JSON.stringify(updated)); setOrders(updated);
       };
 
+      // Caixa dá pagamento realizado (muda pagamento para realizado e garante status concluido para ir ao histórico)
       const payAndFinishOrder = (id) => {
         const todayStr = new Date().toISOString().split('T')[0];
         const updated = (JSON.parse(localStorage.getItem('raiz_orders')) || []).map(o => {
