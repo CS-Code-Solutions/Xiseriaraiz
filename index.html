@@ -21,7 +21,6 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // Ícones
     const IconPhone = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
     const IconChef = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path><line x1="6" y1="17" x2="18" y2="17"></line></svg>;
     const IconArrowLeft = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
@@ -38,14 +37,24 @@
       e.target.nextSibling.style.display = 'block';
     };
 
-    const aditionalItems = [
+    // Adicionais específicos para Xis (com bife, sem salsicha)
+    const xisAddonItems = [
+      { id: 'ad1', name: 'Ovo', price: 2 },
+      { id: 'ad2', name: 'Catupiry', price: 2 },
+      { id: 'ad3', name: 'Queijo', price: 4 },
+      { id: 'ad5', name: 'Cebola', price: 4 },
+      { id: 'ad6', name: 'Bacon', price: 8 },
+      { id: 'ad7', name: 'Bife de Hambúrguer', price: 9 }
+    ];
+
+    // Adicionais específicos para Hot Dog (com salsicha, sem bife)
+    const hotdogAddonItems = [
       { id: 'ad1', name: 'Ovo', price: 2 },
       { id: 'ad2', name: 'Catupiry', price: 2 },
       { id: 'ad3', name: 'Queijo', price: 4 },
       { id: 'ad4', name: 'Salsicha', price: 3 },
       { id: 'ad5', name: 'Cebola', price: 4 },
-      { id: 'ad6', name: 'Bacon', price: 8 },
-      { id: 'ad7', name: 'Bife de Hambúrguer', price: 9 }
+      { id: 'ad6', name: 'Bacon', price: 8 }
     ];
 
     const menuCategories = [
@@ -166,17 +175,36 @@
     function ClientMenu({ tableNumber, setRoute }) {
       const [cart, setCart] = useState([]);
       const [orderSent, setOrderSent] = useState(false);
-      const [addonModalItem, setAddonModalItem] = useState(null);
+      
+      // Modais
+      const [foodModalItem, setFoodModalItem] = useState(null);
+      const [foodModalType, setFoodModalType] = useState(''); // 'xis' ou 'hotdog'
       const [selectedAddons, setSelectedAddons] = useState([]);
       const [itemObservation, setItemObservation] = useState('');
 
-      const handleOpenAddons = (item, catIdName) => {
-        if (catIdName === 'bebidas') {
-          setCart([...cart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]);
-        } else {
-          setAddonModalItem(item);
+      const [drinkModalItem, setDrinkModalItem] = useState(null);
+      const [drinkCopos, setDrinkCopos] = useState(1);
+      const [drinkGelo, setDrinkGelo] = useState('Com Gelo');
+      const [drinkLimao, setDrinkLimao] = useState('Com Limão');
+
+      const handleOpenItem = (item, catIdName) => {
+        if (catIdName === 'xis' || catIdName === 'mini-xis') {
+          setFoodModalType('xis');
+          setFoodModalItem(item);
           setSelectedAddons([]);
           setItemObservation('');
+        } else if (catIdName === 'hot-dog') {
+          setFoodModalType('hotdog');
+          setFoodModalItem(item);
+          setSelectedAddons([]);
+          setItemObservation('');
+        } else if (catIdName === 'bebidas') {
+          setDrinkModalItem(item);
+          setDrinkCopos(1);
+          setDrinkGelo('Com Gelo');
+          setDrinkLimao('Com Limão');
+        } else {
+          setCart([...cart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]);
         }
       };
 
@@ -188,9 +216,15 @@
         }
       };
 
-      const confirmItemToCart = () => {
-        setCart([...cart, { ...addonModalItem, cartId: Date.now(), adicionais: selectedAddons, observation: itemObservation }]);
-        setAddonModalItem(null);
+      const confirmFoodToCart = () => {
+        setCart([...cart, { ...foodModalItem, cartId: Date.now(), adicionais: selectedAddons, observation: itemObservation }]);
+        setFoodModalItem(null);
+      };
+
+      const confirmDrinkToCart = () => {
+        const drinkDetails = `${drinkCopos} copo(s), ${drinkGelo}, ${drinkLimao}`;
+        setCart([...cart, { ...drinkModalItem, cartId: Date.now(), adicionais: [], observation: drinkDetails }]);
+        setDrinkModalItem(null);
       };
 
       const getCartTotal = () => cart.reduce((total, item) => {
@@ -232,7 +266,6 @@
         <div className="pb-24 bg-[#121212]">
           
           <div className="sticky top-0 z-30 bg-[#1a1a1a] shadow-lg border-b border-red-900">
-            {/* Cabeçalho atualizado: Botão Voltar + Logo à esquerda e Mesa ao lado */}
             <header className="p-3 flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <button onClick={() => setRoute('home')} className="text-gray-400 hover:text-white transition-colors"><IconArrowLeft /></button>
@@ -248,7 +281,6 @@
               </div>
             </header>
             
-            {/* Barra de Navegação Horizontal das Categorias */}
             <div className="flex overflow-x-auto py-3 px-4 gap-2 bg-[#121212] border-t border-gray-800 scrollbar-hide shadow-md">
               {menuCategories.map((cat, idx) => (
                 <button 
@@ -274,7 +306,7 @@
                         {item.desc && <p className="text-gray-400 text-xs mt-1 leading-snug">{item.desc}</p>}
                         <p className="text-[#d32f2f] font-bold mt-2 text-lg">R$ {item.price.toFixed(2)}</p>
                       </div>
-                      <button onClick={() => handleOpenAddons(item, cat.idName)} className="bg-[#2a2a2a] text-white hover:bg-[#d32f2f] p-3 rounded-lg transition-colors"><IconPlus /></button>
+                      <button onClick={() => handleOpenItem(item, cat.idName)} className="bg-[#2a2a2a] text-white hover:bg-[#d32f2f] p-3 rounded-lg transition-colors"><IconPlus /></button>
                     </div>
                   ))}
                 </div>
@@ -282,21 +314,22 @@
             ))}
           </div>
 
-          {addonModalItem && (
+          {/* Modal de Adicionais para Lanches (Xis / Hot Dog) */}
+          {foodModalItem && (
             <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
               <div className="bg-[#1e1e1e] w-full max-w-md rounded-2xl p-6 shadow-2xl max-h-[80vh] overflow-y-auto border border-gray-800 flex flex-col">
                 
                 <div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
                   <div>
-                    <h3 className="text-xl font-bold text-[#d32f2f]">{addonModalItem.name}</h3>
+                    <h3 className="text-xl font-bold text-[#d32f2f]">{foodModalItem.name}</h3>
                     <p className="text-gray-400 text-sm">Personalize seu pedido</p>
                   </div>
-                  <button onClick={() => setAddonModalItem(null)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
+                  <button onClick={() => setFoodModalItem(null)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
                 </div>
                 
                 <div className="space-y-3 mb-6 flex-1">
                   <h4 className="text-white font-bold text-sm mb-2">Adicionais (+ R$)</h4>
-                  {aditionalItems.map(addon => (
+                  {(foodModalType === 'xis' ? xisAddonItems : hotdogAddonItems).map(addon => (
                     <label key={addon.id} className="flex items-center justify-between bg-[#2a2a2a] p-3 rounded-lg cursor-pointer hover:bg-[#333] transition-colors">
                       <div className="flex items-center gap-3">
                         <input type="checkbox" className="w-5 h-5 accent-[#d32f2f]" 
@@ -314,14 +347,74 @@
                   <textarea 
                     className="w-full bg-[#121212] text-white border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-[#d32f2f]"
                     rows="2"
-                    placeholder="Ex: Sem milho, sem ervilha, tirar a maionese..."
+                    placeholder="Ex: Sem milho, sem ervilha..."
                     value={itemObservation}
                     onChange={(e) => setItemObservation(e.target.value)}
                   ></textarea>
                 </div>
                 
-                <button onClick={confirmItemToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg transition-colors mt-auto">
+                <button onClick={confirmFoodToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg transition-colors mt-auto">
                   Confirmar e Adicionar
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Modal de Opções para Bebidas (Copos, Gelo, Limão) */}
+          {drinkModalItem && (
+            <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+              <div className="bg-[#1e1e1e] w-full max-w-md rounded-2xl p-6 shadow-2xl border border-gray-800 flex flex-col">
+                <div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-[#d32f2f]">{drinkModalItem.name}</h3>
+                    <p className="text-gray-400 text-sm">Personalize sua bebida</p>
+                  </div>
+                  <button onClick={() => setDrinkModalItem(null)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
+                </div>
+
+                <div className="space-y-5 mb-6">
+                  {/* Número de Copos */}
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">Número de Copos:</label>
+                    <div className="flex gap-3">
+                      {[1, 2, 3, 4].map(num => (
+                        <button key={num} onClick={() => setDrinkCopos(num)}
+                          className={`flex-1 py-2 rounded-lg font-bold transition-colors ${drinkCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>
+                          {num} {num === 1 ? 'Copo' : 'Copos'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Gelo */}
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
+                    <div className="flex gap-3">
+                      {['Com Gelo', 'Sem Gelo'].map(opt => (
+                        <button key={opt} onClick={() => setDrinkGelo(opt)}
+                          className={`flex-1 py-2 rounded-lg font-bold transition-colors ${drinkGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Limão */}
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
+                    <div className="flex gap-3">
+                      {['Com Limão', 'Sem Limão'].map(opt => (
+                        <button key={opt} onClick={() => setDrinkLimao(opt)}
+                          className={`flex-1 py-2 rounded-lg font-bold transition-colors ${drinkLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <button onClick={confirmDrinkToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg transition-colors">
+                  Adicionar Bebida
                 </button>
               </div>
             </div>
