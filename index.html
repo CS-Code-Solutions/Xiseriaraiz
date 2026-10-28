@@ -168,16 +168,15 @@
       const [orderSent, setOrderSent] = useState(false);
       const [addonModalItem, setAddonModalItem] = useState(null);
       const [selectedAddons, setSelectedAddons] = useState([]);
-      const [itemObservation, setItemObservation] = useState(''); // Novo estado para observações
+      const [itemObservation, setItemObservation] = useState('');
 
       const handleOpenAddons = (item, catIdName) => {
-        // Se for bebida, adiciona direto sem perguntar de adicionais
         if (catIdName === 'bebidas') {
           setCart([...cart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]);
         } else {
           setAddonModalItem(item);
           setSelectedAddons([]);
-          setItemObservation(''); // Limpa observação anterior
+          setItemObservation('');
         }
       };
 
@@ -233,16 +232,23 @@
         <div className="pb-24 bg-[#121212]">
           
           <div className="sticky top-0 z-30 bg-[#1a1a1a] shadow-lg border-b border-red-900">
-            <header className="p-4 flex justify-between items-center">
-              <button onClick={() => setRoute('home')} className="text-gray-400"><IconArrowLeft /></button>
-              <div className="text-center flex flex-col items-center">
-                <img src="./Logo.png" alt="RAIZ" className="h-8 mx-auto object-contain" onError={handleImageError} />
-                <div style={{ display: 'none' }}><h1 className="text-xl font-black text-[#d32f2f]">RAIZ</h1></div>
-                <p className="text-gray-400 text-xs mt-1">Mesa {tableNumber}</p>
+            {/* Cabeçalho atualizado: Botão Voltar + Logo à esquerda e Mesa ao lado */}
+            <header className="p-3 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setRoute('home')} className="text-gray-400 hover:text-white transition-colors"><IconArrowLeft /></button>
+                <div className="flex items-center gap-2">
+                  <img src="./Logo.png" alt="RAIZ" className="h-10 object-contain" onError={handleImageError} />
+                  <div style={{ display: 'none' }}><h1 className="text-lg font-black text-[#d32f2f]">RAIZ</h1></div>
+                </div>
               </div>
-              <div className="w-6"></div>
+              
+              <div className="bg-[#2a2a2a] border border-gray-700 px-4 py-1.5 rounded-xl shadow-inner">
+                <span className="text-gray-400 text-xs uppercase tracking-wider block text-right">Local</span>
+                <span className="text-[#d32f2f] font-black text-base">Mesa {tableNumber}</span>
+              </div>
             </header>
             
+            {/* Barra de Navegação Horizontal das Categorias */}
             <div className="flex overflow-x-auto py-3 px-4 gap-2 bg-[#121212] border-t border-gray-800 scrollbar-hide shadow-md">
               {menuCategories.map((cat, idx) => (
                 <button 
@@ -409,7 +415,6 @@
                         <div key={i} className="text-white border-b border-gray-800 pb-2 last:border-0">
                           <p className="font-bold text-lg">• 1x {item.name}</p>
                           
-                          {/* Renderiza Adicionais */}
                           {item.adicionais && item.adicionais.length > 0 && (
                             <div className="mt-1">
                               {item.adicionais.map((add, idx) => (
@@ -418,7 +423,6 @@
                             </div>
                           )}
                           
-                          {/* Renderiza Observações com destaque */}
                           {item.observation && (
                             <p className="text-sm text-yellow-500 pl-4 mt-1 font-bold italic">
                               Obs: {item.observation}
@@ -474,7 +478,7 @@
       const mesaParam = urlParams.get('mesa');
       
       const [route, setRoute] = useState(mesaParam ? 'client' : 'home');
-      const [tableNumber, setTableNumber] = useState(mesaParam || '');
+      const [tableNumber, setTableNumber] = useState(mesaParam || '1');
 
       return (
         <div className="font-sans antialiased text-white">
