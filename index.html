@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RAIZ - Menu Digital & PDV</title>
-  
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
@@ -15,7 +14,6 @@
   </style>
 </head>
 <body class="bg-[#121212] text-white">
-  
   <div id="root"></div>
 
   <script type="text/babel">
@@ -147,7 +145,7 @@
     }
 
     function ClientMenu({ tableNumber, setRoute }) {
-      const [menuData, setMenuData] = useState(getMenu());
+      const [menuData] = useState(getMenu());
       const [cart, setCart] = useState([]);
       const [orderSent, setOrderSent] = useState(false);
       const [showCartModal, setShowCartModal] = useState(false);
@@ -556,7 +554,6 @@
                 {historyOrders.length === 0 ? <p className="text-center text-gray-500 py-6">Nenhum pedido concluído nesta data.</p> : 
                   historyOrders.map(order => (
                     <div key={order.id} className="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700">
-                      
                       <div className="flex justify-between items-start mb-3 border-b border-gray-600 pb-3">
                         <div>
                           <p className="font-bold text-white text-lg">{order.table === 'Balcão' ? 'Balcão' : `Mesa ${order.table}`} <span className="text-sm text-gray-400 ml-2">#{order.id}</span></p>
@@ -564,7 +561,6 @@
                         </div>
                         <div><span className="text-green-500 font-bold bg-green-900/30 px-3 py-1 rounded-full text-xs">Concluído</span></div>
                       </div>
-                      
                       <div className="space-y-2 mb-3">
                         {order.items.map((item, i) => (
                           <div key={i} className="text-gray-300 text-sm">
@@ -577,12 +573,10 @@
                           </div>
                         ))}
                       </div>
-
                       <div className="mt-3 pt-3 border-t border-gray-600 flex justify-between items-center">
                         <span className="text-gray-400 text-sm font-bold">Total do Pedido:</span>
                         <span className="text-white font-black">R$ {getOrderTotal(order.items).toFixed(2)}</span>
                       </div>
-
                     </div>
                   ))
                 }
