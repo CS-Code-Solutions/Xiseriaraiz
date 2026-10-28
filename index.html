@@ -134,7 +134,7 @@
       return saved ? JSON.parse(saved) : defaultMenuCategories;
     };
 
-    const getRefr Brands = () => {
+    const getRefrigBrands = () => {
       const saved = localStorage.getItem('raiz_refrig_brands');
       return saved ? JSON.parse(saved) : ['Coca-Cola', 'Pepsi', 'Fruk'];
     };
@@ -167,7 +167,7 @@
 
     function ClientMenu({ tableNumber, setRoute }) {
       const [menuData] = useState(getMenu());
-      const [refrigBrands, setRefrigBrands] = useState(getRefr Brands);
+      const [refrigBrands, setRefrigBrands] = useState(getRefrigBrands);
       const [cart, setCart] = useState([]);
       const [orderSent, setOrderSent] = useState(false);
       const [showCartModal, setShowCartModal] = useState(false);
@@ -391,7 +391,7 @@
       const [tables, setTables] = useState(() => JSON.parse(localStorage.getItem('raiz_tables')) || []);
       const [newTableNumber, setNewTableNumber] = useState('');
       const [menuData, setMenuData] = useState(getMenu());
-      const [refrigBrands, setRefrigBrands] = useState(getRefr Brands);
+      const [refrigBrands, setRefrigBrands] = useState(getRefrigBrands);
       const [newBrandName, setNewBrandName] = useState('');
       const [editItem, setEditItem] = useState(null);
       const [historyDate, setHistoryDate] = useState(new Date().toISOString().split('T')[0]);
