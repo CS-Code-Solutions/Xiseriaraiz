@@ -1,772 +1,698 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RAIZ - Menu Digital</title>
-​<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-<style>
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAIZ - Menu Digital</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
 <body class="bg-[#121212] text-white">
-​<div id="root"></div>
-​<script type="text/babel">
-const { useState, useEffect } = React;
-​// Ícones
-const IconPhone = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
-const IconChef = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path><line x1="6" y1="17" x2="18" y2="17"></line></svg>;
-const IconArrowLeft = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
-const IconPlus = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
-const IconCart = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>;
-const IconCheck = () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>;
-const IconClock = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
-const IconCheckCircle = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
-const IconList = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>;
-const IconQrCode = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
-const IconTrash = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
-const IconUtensils = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"></path><path d="M15 2v20"></path><path d="M6 2v10a3 3 0 0 0 3 3 3 3 0 0 0 3-3V2"></path></svg>;
-const IconHistory = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v5h5"></path><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"></path><path d="M12 7v5l4 2"></path></svg>;
-const IconDownload = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
-​const handleImageError = (e) => {
-e.target.style.display = 'none';
-e.target.nextSibling.style.display = 'block';
-};
-​// Dados Iniciais do Cardápio se o localStorage estiver vazio
-const initialCategories = [
-{ idName: "xis", title: "XIS", items: [
-{ id: 'x1', name: "X Salada", price: 33, desc: "Pão, maionese, tomate, alface, milho, ervilha, queijo, ovo e bife" },
-{ id: 'x2', name: "X Cebola", price: 37, desc: "Acompanha bife de hambúrguer" },
-{ id: 'x3', name: "X Calabresa", price: 38, desc: "" },
-{ id: 'x4', name: "X Frango", price: 38, desc: "Frango desfiado com molho" },
-{ id: 'x5', name: "X Frango Catupiry", price: 40, desc: "" },
-{ id: 'x6', name: "X Bacon", price: 41, desc: "Acompanha bife de hambúrguer" }
-]},
-{ idName: "mini-xis", title: "MINI XIS", items: [
-{ id: 'mx1', name: "Mini Salada", price: 30, desc: "" },
-{ id: 'mx2', name: "Mini Coração", price: 43, desc: "" },
-{ id: 'mx3', name: "Mini Filé", price: 47, desc: "" }
-]},
-{ idName: "hot-dog", title: "HOT DOG", items: [
-{ id: 'hd1', name: "Dog Salsicha", price: 22, desc: "Pão, maionese caseira, milho, ervilha, tomate, alface, batata palha, uma salsicha, molho" },
-{ id: 'hd2', name: "Dog Coração", price: 40, desc: "Queijo, coração" }
-]},
-{ idName: "torradas", title: "TORRADAS & BAURU", items: [
-{ id: 'tr1', name: "Torrada Tradicional", price: 16, desc: "Três fatias de pão de forma, presunto, queijo, ovo" }
-]},
-{ idName: "porcoes", title: "PORÇÕES & PICADOS", items: [
-{ id: 'pt1', name: "Porção Acompanhamento", price: 12, desc: "" }
-]},
-{ idName: "bebidas", title: "BEBIDAS", items: [
-{ id: 'b1', name: "Refri 220ml", price: 4, desc: "" },
-{ id: 'b2', name: "Refri lata", price: 7, desc: "" },
-{ id: 'b3', name: "Cerveja Heineken 600ml", price: 18, desc: "" }
-]}
-];
-​const xisAddonItems = [
-{ id: 'ad1', name: 'Ovo', price: 2 },
-{ id: 'ad2', name: 'Catupiry', price: 2 },
-{ id: 'ad3', name: 'Queijo', price: 4 },
-{ id: 'ad5', name: 'Cebola', price: 4 },
-{ id: 'ad6', name: 'Bacon', price: 8 },
-{ id: 'ad7', name: 'Bife de Hambúrguer', price: 9 }
-];
-​const hotdogAddonItems = [
-{ id: 'ad1', name: 'Ovo', price: 2 },
-{ id: 'ad2', name: 'Catupiry', price: 2 },
-{ id: 'ad3', name: 'Queijo', price: 4 },
-{ id: 'ad4', name: 'Salsicha', price: 3 },
-{ id: 'ad5', name: 'Cebola', price: 4 },
-{ id: 'ad6', name: 'Bacon', price: 8 }
-];
-​function Home({ setRoute, setTableNumber }) {
-const [adminPassword, setAdminPassword] = useState('');
-const [error, setError] = useState('');
-​return (
-<div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#121212]">
-<div className="bg-[#1e1e1e] p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
-<img src="./Logo.png" alt="Logo RAIZ" className="h-32 mx-auto mb-6 object-contain" onError={handleImageError} />
-<div style={{ display: 'none' }}>
-<h1 className="text-5xl font-black text-[#d32f2f] tracking-tighter mb-1">RAIZ</h1>
-<p className="text-gray-400 text-sm tracking-[0.3em] mb-8">XISERIA • CIA</p>
-</div>
-​<button onClick={() => { setTableNumber('1'); setRoute('client'); }}
-className="w-full bg-[#d32f2f] hover:bg-red-700 text-white p-4 rounded-xl font-bold flex items-center justify-center gap-2 mb-4">
-<IconPhone /> Simular Cliente (Mesa 1)
-</button>
-​<div className="bg-[#2a2a2a] p-4 rounded-xl mt-6">
-<div className="flex items-center justify-center gap-2 text-gray-300 mb-4 font-bold">
-<IconChef /> Acesso da Cozinha
-</div>
-<input type="password" placeholder="Senha (1234)"
-className="w-full bg-[#121212] text-white border border-gray-700 p-3 rounded-lg mb-3 text-center"
-value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} />
-{error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-<button onClick={() => adminPassword === '1234' ? setRoute('admin') : setError('Senha incorreta!')} className="w-full bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg font-bold">
-Entrar no Painel
-</button>
-</div>
-</div>
-</div>
-);
-}
-​function ClientMenu({ tableNumber, setRoute }) {
-const [categories, setCategories] = useState(() => {
-const saved = localStorage.getItem('raiz_categories');
-return saved ? JSON.parse(saved) : initialCategories;
-});
-​const [cart, setCart] = useState([]);
-const [orderSent, setOrderSent] = useState(false);
-const [showCartModal, setShowCartModal] = useState(false);
-​const [foodModalItem, setFoodModalItem] = useState(null);
-const [foodModalType, setFoodModalType] = useState('');
-const [selectedAddons, setSelectedAddons] = useState([]);
-const [itemObservation, setItemObservation] = useState('');
-​const [drinkModalItem, setDrinkModalItem] = useState(null);
-const [drinkCopos, setDrinkCopos] = useState(1);
-const [drinkGelo, setDrinkGelo] = useState('Com Gelo');
-const [drinkLimao, setDrinkLimao] = useState('Com Limão');
-​const handleOpenItem = (item, catIdName) => {
-if (catIdName === 'xis' || catIdName === 'mini-xis') {
-setFoodModalType('xis');
-setFoodModalItem(item);
-setSelectedAddons([]);
-setItemObservation('');
-} else if (catIdName === 'hot-dog') {
-setFoodModalType('hotdog');
-setFoodModalItem(item);
-setSelectedAddons([]);
-setItemObservation('');
-} else if (catIdName === 'bebidas') {
-setDrinkModalItem(item);
-setDrinkCopos(1);
-setDrinkGelo('Com Gelo');
-setDrinkLimao('Com Limão');
-} else {
-setCart([...cart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]);
-}
-};
-​const toggleAddon = (addon) => {
-if (selectedAddons.find(a => a.id === addon.id)) {
-setSelectedAddons(selectedAddons.filter(a => a.id !== addon.id));
-} else {
-setSelectedAddons([...selectedAddons, addon]);
-}
-};
-​const confirmFoodToCart = () => {
-setCart([...cart, { ...foodModalItem, cartId: Date.now(), adicionais: selectedAddons, observation: itemObservation }]);
-setFoodModalItem(null);
-};
-​const confirmDrinkToCart = () => {
-const drinkDetails = ${drinkCopos} copo(s), ${drinkGelo}, ${drinkLimao};
-setCart([...cart, { ...drinkModalItem, cartId: Date.now(), adicionais: [], observation: drinkDetails }]);
-setDrinkModalItem(null);
-};
-​const removeFromCart = (cartId) => {
-setCart(cart.filter(item => item.cartId !== cartId));
-};
-​const getItemTotal = (item) => {
-const adTotal = item.adicionais ? item.adicionais.reduce((sum, add) => sum + add.price, 0) : 0;
-return item.price + adTotal;
-};
-​const getCartTotal = () => cart.reduce((total, item) => total + getItemTotal(item), 0);
-​const sendOrder = () => {
-if (cart.length === 0) return;
-const now = new Date();
-const newOrder = {
-id: Math.random().toString(36).substr(2, 5).toUpperCase(),
-table: tableNumber,
-items: cart,
-timestamp: now.getTime(),
-dateStr: now.toISOString().split('T')[0], // yyyy-mm-dd para filtros
-status: 'pendente'
-};
-const existingOrders = JSON.parse(localStorage.getItem('raiz_orders')) || [];
-localStorage.setItem('raiz_orders', JSON.stringify([...existingOrders, newOrder]));
-setShowCartModal(false);
-setOrderSent(true);
-setCart([]);
-};
-​const scrollToCategory = (idName) => {
-const element = document.getElementById(cat-${idName});
-if (element) {
-element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-};
-​if (orderSent) return (
-<div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#121212]">
-<div className="bg-green-600 p-6 rounded-full mb-6"><IconCheck /></div>
-<h2 className="text-3xl font-bold mb-2 text-white">Pedido Enviado!</h2>
-<p className="text-gray-400 mb-8">A cozinha já está a preparar o seu pedido.</p>
-<button onClick={() => setOrderSent(false)} className="bg-[#d32f2f] px-8 py-3 rounded-lg font-bold text-white">Novo pedido</button>
-</div>
-);
-​return (
-<div className="pb-24 bg-[#121212]">
-<div className="sticky top-0 z-30 bg-[#1a1a1a] shadow-lg border-b border-red-900">
-<header className="p-3 flex justify-between items-center">
-<div className="flex items-center gap-3">
-<button onClick={() => setRoute('home')} className="text-gray-400 hover:text-white transition-colors"><IconArrowLeft /></button>
-<div className="flex items-center gap-2">
-<img src="./Logo.png" alt="RAIZ" className="h-10 object-contain" onError={handleImageError} />
-<div style={{ display: 'none' }}><h1 className="text-lg font-black text-[#d32f2f]">RAIZ</h1></div>
-</div>
-</div>
-​<div className="bg-[#2a2a2a] border border-gray-700 px-4 py-1.5 rounded-xl shadow-inner">
-<span className="text-gray-400 text-xs uppercase tracking-wider block text-right">Local</span>
-<span className="text-[#d32f2f] font-black text-base">Mesa {tableNumber}</span>
-</div>
-</header>
-​<div className="flex overflow-x-auto py-3 px-4 gap-2 bg-[#121212] border-t border-gray-800 scrollbar-hide shadow-md">
-{categories.map((cat, idx) => (
-<button
-key={idx}
-onClick={() => scrollToCategory(cat.idName)}
-className="whitespace-nowrap bg-[#2a2a2a] hover:bg-[#d32f2f] text-gray-200 hover:text-white px-4 py-2 rounded-full text-sm font-bold transition-colors"
->
-{cat.title}
-</button>
-))}
-</div>
-</div>
-​<div className="p-4 space-y-8 max-w-2xl mx-auto pt-6">
-{categories.map((cat, idx) => (
-<div key={idx} id={cat-${cat.idName}} className="scroll-mt-32">
-<h2 className="text-xl font-bold border-b-2 border-[#d32f2f] pb-2 mb-4 text-white uppercase tracking-wide">{cat.title}</h2>
-<div className="space-y-4">
-{cat.items && cat.items.map(item => (
-<div key={item.id} className="bg-[#1e1e1e] p-4 rounded-xl flex justify-between items-center shadow-lg border border-transparent hover:border-gray-700 transition-colors">
-<div className="flex-1 pr-4">
-<h3 className="font-bold text-lg leading-tight text-white">{item.name}</h3>
-{item.desc && <p className="text-gray-400 text-xs mt-1 leading-snug">{item.desc}</p>}
-<p className="text-[#d32f2f] font-bold mt-2 text-lg">R$ {Number(item.price).toFixed(2)}</p>
-</div>
-<button onClick={() => handleOpenItem(item, cat.idName)} className="bg-[#2a2a2a] text-white hover:bg-[#d32f2f] p-3 rounded-lg transition-colors"><IconPlus /></button>
-</div>
-))}
-</div>
-</div>
-))}
-</div>
-​{/* Modal Adicionais */}
-{foodModalItem && (
-<div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-<div className="bg-[#1e1e1e] w-full max-w-md rounded-2xl p-6 shadow-2xl max-h-[80vh] overflow-y-auto border border-gray-800 flex flex-col">
-<div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
-<div>
-<h3 className="text-xl font-bold text-[#d32f2f]">{foodModalItem.name}</h3>
-<p className="text-gray-400 text-sm">Personalize seu pedido</p>
-</div>
-<button onClick={() => setFoodModalItem(null)} className="text-gray-500 hover:text-white text-3xl leading-none">×</button>
-</div>
-​<div className="space-y-3 mb-6 flex-1">
-<h4 className="text-white font-bold text-sm mb-2">Adicionais (+ R$)</h4>
-{(foodModalType === 'xis' ? xisAddonItems : hotdogAddonItems).map(addon => (
-<label key={addon.id} className="flex items-center justify-between bg-[#2a2a2a] p-3 rounded-lg cursor-pointer hover:bg-[#333] transition-colors">
-<div className="flex items-center gap-3">
-<input type="checkbox" className="w-5 h-5 accent-[#d32f2f]"
-checked={!!selectedAddons.find(a => a.id === addon.id)}
-onChange={() => toggleAddon(addon)} />
-<span className="font-bold text-white">{addon.name}</span>
-</div>
-<span className="text-[#d32f2f] font-bold">+ R$ {addon.price.toFixed(2)}</span>
-</label>
-))}
-</div>
-​<div className="border-t border-gray-700 pt-4 mb-6">
-<h4 className="text-white font-bold text-sm mb-2">Observações</h4>
-<textarea
-className="w-full bg-[#121212] text-white border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-[#d32f2f]"
-rows="2"
-placeholder="Ex: Sem milho, sem ervilha..."
-value={itemObservation}
-onChange={(e) => setItemObservation(e.target.value)}
-></textarea>
-</div>
-​<button onClick={confirmFoodToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg transition-colors mt-auto">
-Confirmar e Adicionar
-</button>
-</div>
-</div>
-)}
-​{/* Modal Bebidas */}
-{drinkModalItem && (
-<div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-<div className="bg-[#1e1e1e] w-full max-w-md rounded-2xl p-6 shadow-2xl border border-gray-800 flex flex-col">
-<div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
-<div>
-<h3 className="text-xl font-bold text-[#d32f2f]">{drinkModalItem.name}</h3>
-<p className="text-gray-400 text-sm">Personalize sua bebida</p>
-</div>
-<button onClick={() => setDrinkModalItem(null)} className="text-gray-500 hover:text-white text-3xl leading-none">×</button>
-</div>
-​<div className="space-y-5 mb-6">
-<div>
-<label className="text-gray-300 font-bold text-sm block mb-2">Número de Copos:</label>
-<div className="flex gap-3">
-{[1, 2, 3, 4].map(num => (
-<button key={num} onClick={() => setDrinkCopos(num)}
-className={flex-1 py-2 rounded-lg font-bold transition-colors ${drinkCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}}>
-{num} {num === 1 ? 'Copo' : 'Copos'}
-</button>
-))}
-</div>
-</div>
-​<div>
-<label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
-<div className="flex gap-3">
-{['Com Gelo', 'Sem Gelo'].map(opt => (
-<button key={opt} onClick={() => setDrinkGelo(opt)}
-className={flex-1 py-2 rounded-lg font-bold transition-colors ${drinkGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}}>
-{opt}
-</button>
-))}
-</div>
-</div>
-​<div>
-<label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
-<div className="flex gap-3">
-{['Com Limão', 'Sem Limão'].map(opt => (
-<button key={opt} onClick={() => setDrinkLimao(opt)}
-className={flex-1 py-2 rounded-lg font-bold transition-colors ${drinkLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}}>
-{opt}
-</button>
-))}
-</div>
-</div>
-</div>
-​<button onClick={confirmDrinkToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg transition-colors">
-Adicionar Bebida
-</button>
-</div>
-</div>
-)}
-​{/* Carrinho Modal */}
-{showCartModal && (
-<div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-<div className="bg-[#1e1e1e] w-full max-w-lg rounded-2xl p-6 shadow-2xl max-h-[85vh] overflow-y-auto border border-gray-800 flex flex-col">
-<div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
-<div>
-<h3 className="text-2xl font-black text-white">Seu Carrinho</h3>
-<p className="text-gray-400 text-sm">Mesa {tableNumber}</p>
-</div>
-<button onClick={() => setShowCartModal(false)} className="text-gray-500 hover:text-white text-3xl leading-none">×</button>
-</div>
-​<div className="space-y-4 mb-6 flex-1 overflow-y-auto pr-1">
-{cart.length === 0 ? (
-<p className="text-center text-gray-500 py-6">O seu carrinho está vazio.</p>
-) : (
-cart.map(item => (
-<div key={item.cartId} className="bg-[#2a2a2a] p-4 rounded-xl flex justify-between items-start border border-gray-700">
-<div className="flex-1 pr-3">
-<h4 className="font-bold text-lg text-white">{item.name}</h4>
-<p className="text-[#d32f2f] font-bold">R$ {getItemTotal(item).toFixed(2)}</p>
-​{item.adicionais && item.adicionais.length > 0 && (
-<div className="mt-1 text-sm text-gray-300">
-{item.adicionais.map((add, idx) => (
-<p key={idx}>+ {add.name} (R$ {add.price.toFixed(2)})</p>
-))}
-</div>
-)}
-​{item.observation && (
-<p className="text-sm text-yellow-400 mt-1 italic font-bold">
-Obs: {item.observation}
-</p>
-)}
-</div>
-​<button onClick={() => removeFromCart(item.cartId)} className="text-red-400 hover:text-red-300 p-2">
-<IconTrash />
-</button>
-</div>
-))
-)}
-</div>
-​{cart.length > 0 && (
-<div className="border-t border-gray-700 pt-4 mt-auto">
-<div className="flex justify-between items-center mb-4">
-<span className="text-gray-400 font-bold">Total do Pedido:</span>
-<span className="text-2xl font-black text-white">R$ {getCartTotal().toFixed(2)}</span>
-</div>
-<button onClick={sendOrder} className="w-full bg-[#d32f2f] hover:bg-red-700 text-white font-bold py-4 rounded-xl text-lg transition-colors flex items-center justify-center gap-2">
-<IconCart /> Enviar Pedido para a Cozinha
-</button>
-</div>
-)}
-</div>
-</div>
-)}
-​{cart.length > 0 && (
-<div className="fixed bottom-0 w-full bg-[#1e1e1e] p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-20 border-t border-gray-800">
-<div className="max-w-2xl mx-auto flex justify-between items-center">
-<div>
-<p className="text-gray-400 text-sm">{cart.length} item(s) no carrinho</p>
-<p className="font-bold text-xl text-white">R$ {getCartTotal().toFixed(2)}</p>
-</div>
-<button onClick={() => setShowCartModal(true)} className="bg-[#d32f2f] hover:bg-red-700 px-6 py-3 rounded-xl font-bold flex gap-2 text-white transition-colors">
-<IconCart /> Visualizar Carrinho
-</button>
-</div>
-</div>
-)}
-</div>
-);
-}
-​function AdminPanel({ setRoute }) {
-const [activeTab, setActiveTab] = useState('pedidos');
-const [orders, setOrders] = useState([]);
-const [now, setNow] = useState(Date.now());
-​// Mesas
-const [tables, setTables] = useState(() => JSON.parse(localStorage.getItem('raiz_tables')) || []);
-const [newTableNumber, setNewTableNumber] = useState('');
-​// Produtos & Categorias
-const [categories, setCategories] = useState(() => {
-const saved = localStorage.getItem('raiz_categories');
-return saved ? JSON.parse(saved) : initialCategories;
-});
-const [editingProduct, setEditingProduct] = useState(null); // { catIdName, item } ou null
-const [newProdName, setNewProdName] = useState('');
-const [newProdPrice, setNewProdPrice] = useState('');
-const [newProdDesc, setNewProdDesc] = useState('');
-const [selectedCategoryForNew, setSelectedCategoryForNew] = useState('xis');
-​// Histórico
-const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
-​useEffect(() => {
-const timer = setInterval(() => setNow(Date.now()), 1000);
-return () => clearInterval(timer);
-}, []);
-​useEffect(() => {
-const savedOrders = JSON.parse(localStorage.getItem('raiz_orders')) || [];
-setOrders(savedOrders);
-}, [activeTab]);
-​const completeOrder = (id) => {
-const updated = orders.map(o => o.id === id ? { ...o, status: 'concluido' } : o);
-setOrders(updated);
-localStorage.setItem('raiz_orders', JSON.stringify(updated));
-};
-​const getTime = (ts) => {
-const diff = Math.floor((now - ts) / 1000);
-return ${Math.floor(diff / 60).toString().padStart(2, '0')}:${(diff % 60).toString().padStart(2, '0')};
-};
-​// Gerenciar Mesas & QR
-const handleAddTable = () => {
-if (!newTableNumber) return;
-const url = ${window.location.origin}${window.location.pathname}?mesa=${newTableNumber};
-const updatedTables = [...tables, { number: newTableNumber, url }];
-setTables(updatedTables);
-localStorage.setItem('raiz_tables', JSON.stringify(updatedTables));
-setNewTableNumber('');
-};
-​const handleDeleteTable = (num) => {
-const updated = tables.filter(t => t.number !== num);
-setTables(updated);
-localStorage.setItem('raiz_tables', JSON.stringify(updated));
-};
-​// Download QR Code automático via canvas/fetch blob
-const handleDownloadQR = (tableNum, url) => {
-const qrImageUrl = https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)};
-fetch(qrImageUrl)
-.then(response => response.blob())
-.then(blob => {
-const blobUrl = window.URL.createObjectURL(blob);
-const a = document.createElement('a');
-a.href = blobUrl;
-a.download = QRCode_Mesa_${tableNum}.png;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-window.URL.revokeObjectURL(blobUrl);
-})
-.catch(() => {
-window.open(qrImageUrl, '_blank');
-});
-};
-​// Gerenciar Produtos (Criar / Editar)
-const handleSaveProduct = (e) => {
-e.preventDefault();
-if (!newProdName || !newProdPrice) return;
-​const updatedCategories = categories.map(cat => {
-if (editingProduct) {
-// Editando produto existente
-if (cat.idName === editingProduct.catIdName) {
-const updatedItems = cat.items.map(item =>
-item.id === editingProduct.item.id
-? { ...item, name: newProdName, price: parseFloat(newProdPrice), desc: newProdDesc }
-: item
-);
-return { ...cat, items: updatedItems };
-}
-} else {
-// Criando novo produto
-if (cat.idName === selectedCategoryForNew) {
-const newItem = {
-id: 'prod_' + Math.random().toString(36.2),
-name: newProdName,
-price: parseFloat(newProdPrice),
-desc: newProdDesc
-};
-return { ...cat, items: [...cat.items, newItem] };
-}
-}
-return cat;
-});
-​setCategories(updatedCategories);
-localStorage.setItem('raiz_categories', JSON.stringify(updatedCategories));
-​// Limpar formulário
-setEditingProduct(null);
-setNewProdName('');
-setNewProdPrice('');
-setNewProdDesc('');
-};
-​const startEditProduct = (catIdName, item) => {
-setEditingProduct({ catIdName, item });
-setNewProdName(item.name);
-setNewProdPrice(item.price);
-setNewProdDesc(item.desc || '');
-setSelectedCategoryForNew(catIdName);
-};
-​const handleDeleteProduct = (catIdName, itemId) => {
-if (!confirm('Deseja excluir este produto?')) return;
-const updated = categories.map(cat => {
-if (cat.idName === catIdName) {
-return { ...cat, items: cat.items.filter(i => i.id !== itemId) };
-}
-return cat;
-});
-setCategories(updated);
-localStorage.setItem('raiz_categories', JSON.stringify(updated));
-};
-​const pendingOrders = orders.filter(o => o.status === 'pendente');
-const historyOrders = orders.filter(o => o.status === 'concluido' && (!filterDate || o.dateStr === filterDate));
-​return (
-<div className="pb-24 p-6 min-h-screen bg-[#121212]">
-<header className="flex justify-between items-center mb-6 bg-[#1e1e1e] p-4 rounded-xl">
-<button onClick={() => setRoute('home')} className="text-gray-400 hover:text-white"><IconArrowLeft /></button>
-<h1 className="text-2xl font-black text-white">PAINEL ADMIN</h1>
-<div className="bg-[#d32f2f] px-3 py-1 rounded-full text-sm font-bold animate-pulse text-white">Ativo</div>
-</header>
-​{/* Abas */}
-<div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-<button onClick={() => setActiveTab('pedidos')} className={px-4 py-2 rounded-xl font-bold flex items-center gap-2 whitespace-nowrap ${activeTab === 'pedidos' ? 'bg-[#d32f2f] text-white' : 'bg-[#1e1e1e] text-gray-400'}}>
-<IconChef /> Pedidos em Tempo Real ({pendingOrders.length})
-</button>
-<button onClick={() => setActiveTab('cardapio')} className={px-4 py-2 rounded-xl font-bold flex items-center gap-2 whitespace-nowrap ${activeTab === 'cardapio' ? 'bg-[#d32f2f] text-white' : 'bg-[#1e1e1e] text-gray-400'}}>
-<IconUtensils /> Gestão de Produtos
-</button>
-<button onClick={() => setActiveTab('mesas')} className={px-4 py-2 rounded-xl font-bold flex items-center gap-2 whitespace-nowrap ${activeTab === 'mesas' ? 'bg-[#d32f2f] text-white' : 'bg-[#1e1e1e] text-gray-400'}}>
-<IconQrCode /> Mesas & QR Codes
-</button>
-<button onClick={() => setActiveTab('historico')} className={px-4 py-2 rounded-xl font-bold flex items-center gap-2 whitespace-nowrap ${activeTab === 'historico' ? 'bg-[#d32f2f] text-white' : 'bg-[#1e1e1e] text-gray-400'}}>
-<IconHistory /> Histórico de Vendas
-</button>
-</div>
-​{/* TAB 1: PEDIDOS */}
-{activeTab === 'pedidos' && (
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-{pendingOrders.length === 0 ? (
-<div className="col-span-full text-center text-gray-500 mt-10"><p className="text-xl">Nenhum pedido na fila.</p></div>
-) : (
-pendingOrders.map(order => (
-<div key={order.id} className="bg-[#1e1e1e] border-l-4 border-[#d32f2f] rounded-xl p-5 shadow-xl flex flex-col">
-<div className="flex justify-between border-b border-gray-700 pb-3 mb-3">
-<div>
-<h2 className="text-2xl font-black text-white">Mesa {order.table}</h2>
-<p className="text-gray-400 text-sm">#{order.id}</p>
-</div>
-<div className="bg-[#2a2a2a] text-[#d32f2f] px-3 py-1 rounded-lg text-xl font-bold flex items-center gap-2"><IconClock /> {getTime(order.timestamp)}</div>
-</div>
-<div className="flex-1 space-y-4 mb-4">
-{order.items.map((item, i) => (
-<div key={i} className="text-white border-b border-gray-800 pb-2 last:border-0">
-<p className="font-bold text-lg">• 1x {item.name}</p>
-{item.adicionais && item.adicionais.length > 0 && (
-<div className="mt-1">
-{item.adicionais.map((add, idx) => (
-<p key={idx} className="text-sm text-gray-400 pl-4">+ {add.name}</p>
-))}
-</div>
-)}
-{item.observation && (
-<p className="text-sm text-yellow-500 pl-4 mt-1 font-bold italic">Obs: {item.observation}</p>
-)}
-</div>
-))}
-</div>
-<button onClick={() => completeOrder(order.id)} className="w-full bg-green-600 hover:bg-green-500 py-4 rounded-lg font-bold flex justify-center gap-2 text-lg text-white transition-colors mt-auto"><IconCheckCircle /> Entregar</button>
-</div>
-))
-)}
-</div>
-)}
-​{/* TAB 2: CARDÁPIO (ADICIONAR & EDITAR) */}
-{activeTab === 'cardapio' && (
-<div className="max-w-3xl mx-auto space-y-8">
-<div className="bg-[#1e1e1e] p-6 rounded-xl border border-gray-800">
-<h2 className="text-xl font-bold mb-4 text-white">{editingProduct ? 'Editar Produto' : 'Cadastrar Novo Produto'}</h2>
-<form onSubmit={handleSaveProduct} className="space-y-4">
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label className="text-gray-400 text-sm block mb-1">Categoria</label>
-<select disabled={!!editingProduct} className="w-full bg-[#121212] border border-gray-700 p-3 rounded-lg text-white"
-value={selectedCategoryForNew} onChange={e => setSelectedCategoryForNew(e.target.value)}>
-{categories.map(c => <option key={c.idName} value={c.idName}>{c.title}</option>)}
-</select>
-</div>
-<div>
-<label className="text-gray-400 text-sm block mb-1">Nome do Produto</label>
-<input type="text" required placeholder="Ex: X Especial da Casa" className="w-full bg-[#121212] border border-gray-700 p-3 rounded-lg text-white"
-value={newProdName} onChange={e => setNewProdName(e.target.value)} />
-</div>
-</div>
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label className="text-gray-400 text-sm block mb-1">Preço (R$)</label>
-<input type="number" step="0.01" required placeholder="0.00" className="w-full bg-[#121212] border border-gray-700 p-3 rounded-lg text-white"
-value={newProdPrice} onChange={e => setNewProdPrice(e.target.value)} />
-</div>
-<div>
-<label className="text-gray-400 text-sm block mb-1">Descrição / Ingredientes</label>
-<input type="text" placeholder="Ex: Pão, carne, queijo..." className="w-full bg-[#121212] border border-gray-700 p-3 rounded-lg text-white"
-value={newProdDesc} onChange={e => setNewProdDesc(e.target.value)} />
-</div>
-</div>
-<div className="flex gap-2 pt-2">
-<button type="submit" className="bg-[#d32f2f] hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg transition-colors">
-{editingProduct ? 'Salvar Alterações' : 'Adicionar Produto'}
-</button>
-{editingProduct && (
-<button type="button" onClick={() => { setEditingProduct(null); setNewProdName(''); setNewProdPrice(''); setNewProdDesc(''); }} className="bg-gray-700 px-4 py-3 rounded-lg font-bold">Cancelar</button>
-)}
-</div>
-</form>
-</div>
-​{/* Lista de Produtos existentes */}
-<div className="space-y-6">
-{categories.map(cat => (
-<div key={cat.idName} className="bg-[#1e1e1e] p-6 rounded-xl border border-gray-800">
-<h3 className="text-lg font-bold text-[#d32f2f] mb-4 border-b border-gray-800 pb-2">{cat.title}</h3>
-<div className="space-y-3">
-{cat.items.map(item => (
-<div key={item.id} className="bg-[#2a2a2a] p-4 rounded-xl flex justify-between items-center">
-<div>
-<h4 className="font-bold text-white">{item.name} <span className="text-[#d32f2f] ml-2">R$ {Number(item.price).toFixed(2)}</span></h4>
-{item.desc && <p className="text-gray-400 text-xs mt-1">{item.desc}</p>}
-</div>
-<div className="flex gap-2">
-<button onClick={() => startEditProduct(cat.idName, item)} className="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg text-xs font-bold">Editar</button>
-<button onClick={() => handleDeleteProduct(cat.idName, item.id)} className="bg-red-900/60 hover:bg-red-800 px-3 py-1.5 rounded-lg text-xs font-bold text-red-200">Excluir</button>
-</div>
-</div>
-))}
-</div>
-</div>
-))}
-</div>
-</div>
-)}
-​{/* TAB 3: MESAS & QR CODE */}
-{activeTab === 'mesas' && (
-<div className="max-w-2xl mx-auto bg-[#1e1e1e] p-6 rounded-xl">
-<h2 className="text-xl font-bold border-b border-gray-700 pb-2 mb-4 text-white">Cadastrar Mesas & QR Code</h2>
-<div className="flex gap-2 mb-8">
-<input type="number" placeholder="Número da Mesa" className="flex-1 bg-[#121212] text-white border border-gray-700 p-3 rounded-lg"
-value={newTableNumber} onChange={e => setNewTableNumber(e.target.value)} />
-<button onClick={handleAddTable} className="bg-[#d32f2f] hover:bg-red-700 font-bold px-6 py-3 rounded-lg text-white transition-colors">Gerar QR</button>
-</div>
-​<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-{tables.map(t => (
-<div key={t.number} className="bg-[#2a2a2a] p-4 rounded-xl flex flex-col items-center border border-gray-700">
-<h3 className="font-black text-xl mb-3 text-white">Mesa {t.number}</h3>
-<div className="bg-white p-2 rounded-lg mb-3">
-<img src={https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.url)}} alt={QR Mesa ${t.number}} />
-</div>
-​<div className="flex gap-2 w-full mt-2">
-<button onClick={() => handleDownloadQR(t.number, t.url)} className="flex-1 bg-green-700 hover:bg-green-600 text-white text-xs font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-1 transition-colors">
-<IconDownload /> Baixar QR
-</button>
-<button onClick={() => handleDeleteTable(t.number)} className="bg-red-900/60 hover:bg-red-800 text-red-200 text-xs font-bold py-2 px-3 rounded-lg transition-colors">Remover</button>
-</div>
-</div>
-))}
-</div>
-</div>
-)}
-​{/* TAB 4: HISTÓRICO DE PEDIDOS */}
-{activeTab === 'historico' && (
-<div className="max-w-3xl mx-auto bg-[#1e1e1e] p-6 rounded-xl">
-<div className="flex flex-col sm:flex-row justify-between items-center border-b border-gray-700 pb-4 mb-6 gap-4">
-<h2 className="text-xl font-bold text-white">Histórico de Pedidos Concluídos</h2>
-<div className="flex items-center gap-2">
-<label className="text-gray-400 text-sm">Filtrar por data:</label>
-<input type="date" className="bg-[#121212] text-white border border-gray-700 p-2 rounded-lg text-sm"
-value={filterDate} onChange={e => setFilterDate(e.target.value)} />
-{filterDate && (
-<button onClick={() => setFilterDate('')} className="text-xs text-red-400 underline">Limpar Filtro</button>
-)}
-</div>
-</div>
-​<div className="space-y-4">
-{historyOrders.length === 0 ? (
-<p className="text-center text-gray-500 py-8">Nenhum pedido encontrado para esta data.</p>
-) : (
-historyOrders.map(order => (
-<div key={order.id} className="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-<div>
-<div className="flex items-center gap-2 mb-1">
-<span className="bg-[#d32f2f] text-white text-xs font-bold px-2 py-0.5 rounded">Mesa {order.table}</span>
-<span className="text-gray-400 text-xs">#{order.id} • {new Date(order.timestamp).toLocaleTimeString()}</span>
-</div>
-<div className="text-sm text-gray-200 space-y-1">
-{order.items.map((item, idx) => (
-<p key={idx}>• 1x {item.name} {item.observation ? (${item.observation}) : ''}</p>
-))}
-</div>
-</div>
-<div className="text-right">
-<span className="text-xs text-gray-400 block">Status</span>
-<span className="text-green-400 font-bold text-sm">Entregue</span>
-</div>
-</div>
-))
-)}
-</div>
-</div>
-)}
-​<div className="fixed bottom-0 left-0 w-full bg-[#1a1a1a] border-t border-gray-800 flex justify-around p-3 z-20">
-<button onClick={() => setActiveTab('pedidos')} className={flex flex-col items-center gap-1 ${activeTab === 'pedidos' ? 'text-[#d32f2f]' : 'text-gray-500'}}>
-<IconChef /><span className="text-xs font-bold">Pedidos</span>
-</button>
-<button onClick={() => setActiveTab('cardapio')} className={flex flex-col items-center gap-1 ${activeTab === 'cardapio' ? 'text-[#d32f2f]' : 'text-gray-500'}}>
-<IconUtensils /><span className="text-xs font-bold">Cardápio</span>
-</button>
-<button onClick={() => setActiveTab('mesas')} className={flex flex-col items-center gap-1 ${activeTab === 'mesas' ? 'text-[#d32f2f]' : 'text-gray-500'}}>
-<IconQrCode /><span className="text-xs font-bold">Mesas & QR</span>
-</button>
-<button onClick={() => setActiveTab('historico')} className={flex flex-col items-center gap-1 ${activeTab === 'historico' ? 'text-[#d32f2f]' : 'text-gray-500'}}>
-<IconHistory /><span className="text-xs font-bold">Histórico</span>
-</button>
-</div>
-</div>
-);
-}
-​function App() {
-const urlParams = new URLSearchParams(window.location.search);
-const mesaParam = urlParams.get('mesa');
-​const [route, setRoute] = useState(mesaParam ? 'client' : 'home');
-const [tableNumber, setTableNumber] = useState(mesaParam || '1');
-​return (
-<div className="font-sans antialiased text-white">
-{route === 'home' && <Home setRoute={setRoute} setTableNumber={setTableNumber} />}
-{route === 'client' && <ClientMenu setRoute={setRoute} tableNumber={tableNumber} />}
-{route === 'admin' && <AdminPanel setRoute={setRoute} />}
-</div>
-);
-}
-​const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
-</script>
+  
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- ÍCONES ---
+    const IconPhone = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
+    const IconChef = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path><line x1="6" y1="17" x2="18" y2="17"></line></svg>;
+    const IconArrowLeft = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
+    const IconPlus = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
+    const IconCart = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>;
+    const IconCheck = () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>;
+    const IconClock = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
+    const IconCheckCircle = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
+    const IconList = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>;
+    const IconQrCode = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
+    const IconTrash = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
+    const IconHistory = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>;
+    const IconBox = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
+    const IconDownload = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
+    const IconEdit = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>;
+
+    const handleImageError = (e) => {
+      e.target.style.display = 'none';
+      e.target.nextSibling.style.display = 'block';
+    };
+
+    // --- DADOS E LISTAS ---
+    const xisAddonItems = [
+      { id: 'ad1', name: 'Ovo', price: 2 },
+      { id: 'ad2', name: 'Catupiry', price: 2 },
+      { id: 'ad3', name: 'Queijo', price: 4 },
+      { id: 'ad5', name: 'Cebola', price: 4 },
+      { id: 'ad6', name: 'Bacon', price: 8 },
+      { id: 'ad7', name: 'Bife de Hambúrguer', price: 9 }
+    ];
+
+    const hotdogAddonItems = [
+      { id: 'ad1', name: 'Ovo', price: 2 },
+      { id: 'ad2', name: 'Catupiry', price: 2 },
+      { id: 'ad3', name: 'Queijo', price: 4 },
+      { id: 'ad4', name: 'Salsicha', price: 3 },
+      { id: 'ad5', name: 'Cebola', price: 4 },
+      { id: 'ad6', name: 'Bacon', price: 8 }
+    ];
+
+    const defaultMenuCategories = [
+      { title: "XIS", idName: "xis", items: [
+        { id: 'x1', name: "X Salada", price: 33, desc: "Pão, maionese, tomate, alface, milho, ervilha, queijo, ovo e bife" },
+        { id: 'x2', name: "X Cebola", price: 37, desc: "Acompanha bife de hambúrguer" },
+        { id: 'x3', name: "X Calabresa", price: 38, desc: "" },
+        { id: 'x4', name: "X Frango", price: 38, desc: "Frango desfiado com molho" },
+        { id: 'x5', name: "X Frango Catupiry", price: 40, desc: "" },
+        { id: 'x6', name: "X Bacon", price: 41, desc: "Acompanha bife de hambúrguer" },
+        { id: 'x7', name: "X Strogonoff", price: 44, desc: "" },
+        { id: 'x8', name: "X Coração", price: 46, desc: "" },
+        { id: 'x9', name: "X Picanha", price: 49, desc: "" },
+        { id: 'x10', name: "X Filé", price: 51, desc: "" },
+        { id: 'x11', name: "X Misto", price: 54, desc: "Até três tipos de sabores" },
+        { id: 'x12', name: "X Grão de Bico", price: 38, desc: "" },
+        { id: 'x13', name: "X Soja", price: 38, desc: "" },
+        { id: 'x14', name: "X Feijão Vermelho", price: 38, desc: "" }
+      ]},
+      { title: "MINI XIS", idName: "mini-xis", items: [
+        { id: 'mx1', name: "Mini Salada", price: 30, desc: "" },
+        { id: 'mx2', name: "Mini Cebola", price: 34, desc: "" },
+        { id: 'mx3', name: "Mini Calabresa", price: 35, desc: "" },
+        { id: 'mx4', name: "Mini Frango", price: 35, desc: "" },
+        { id: 'mx5', name: "Mini Frango Catupiry", price: 37, desc: "" },
+        { id: 'mx6', name: "Mini Bacon", price: 39, desc: "" },
+        { id: 'mx7', name: "Mini Strogonoff", price: 41, desc: "" },
+        { id: 'mx8', name: "Mini Coração", price: 43, desc: "" },
+        { id: 'mx9', name: "Mini Picanha", price: 44, desc: "" },
+        { id: 'mx10', name: "Mini Filé", price: 47, desc: "" },
+        { id: 'mx11', name: "Mini Misto", price: 49, desc: "" },
+        { id: 'mx12', name: "Mini Grão de Bico", price: 35, desc: "" },
+        { id: 'mx13', name: "Mini Soja", price: 35, desc: "" },
+        { id: 'mx14', name: "Mini Feijão Vermelho", price: 35, desc: "" }
+      ]},
+      { title: "HOT DOG", idName: "hot-dog", items: [
+        { id: 'hd1', name: "Dog Salsicha", price: 22, desc: "Pão, maionese caseira, milho, ervilha, tomate, alface, batata palha, uma salsicha, molho" },
+        { id: 'hd2', name: "Dog Pastor", price: 25, desc: "Pão, maionese caseira, milho, ervilha, tomate, alface, batata palha, uma salsicha, molho, queijo" },
+        { id: 'hd3', name: "Dog Calabresa", price: 32, desc: "Queijo, calabresa picada" },
+        { id: 'hd4', name: "Dog Frango", price: 32, desc: "Queijo, frango desfiado" },
+        { id: 'hd5', name: "Dog Coração", price: 40, desc: "Queijo, coração" },
+        { id: 'hd6', name: "Dog Strogonoff", price: 40, desc: "Queijo, strogonoff" }
+      ]},
+      { title: "TORRADAS & BAURU", idName: "torradas", items: [
+        { id: 'tr1', name: "Torrada Tradicional", price: 16, desc: "Três fatias de pão de forma, presunto, queijo, ovo" },
+        { id: 'tr2', name: "Torrada no Pão de Mini Xis", price: 22, desc: "Pão de mini xis, maionese caseira, presunto, queijo, ovo" },
+        { id: 'tr3', name: "Torrada no Pão de Xis", price: 25, desc: "Pão de xis, maionese caseira, presunto, queijo, ovo" },
+        { id: 'br1', name: "Bauru de Filé", price: 52, desc: "Pão cervejinha, maionese caseira, tomate, alface, ovo, queijo, bife de filé" }
+      ]},
+      { title: "PORÇÕES & PICADOS", idName: "porcoes", items: [
+        { id: 'pt1', name: "Porção Acompanhamento", price: 12, desc: "" },
+        { id: 'pt2', name: "Porção 300 gramas", price: 35, desc: "" },
+        { id: 'pt3', name: "Porção 300 gramas com queijo", price: 38, desc: "" },
+        { id: 'pc1', name: "Picadão (Coração, Calabresa, Frango)", price: 130, desc: "Acompanha ovo de codorna, azeitona, queijo, pepino e fritas" },
+        { id: 'pc2', name: "Picadão (Coração, Calabresa, Picanha)", price: 150, desc: "Acompanha ovo de codorna, azeitona, queijo, pepino e fritas" }
+      ]},
+      { title: "BEBIDAS", idName: "bebidas", items: [
+        { id: 'b1', name: "Refri 220ml", price: 4, desc: "" },
+        { id: 'b2', name: "Refri 290ml", price: 5, desc: "" },
+        { id: 'b3', name: "Refri lata", price: 7, desc: "" },
+        { id: 'b4', name: "Refri 600ml", price: 9, desc: "" },
+        { id: 'b5', name: "Refri 1Litro", price: 11, desc: "" },
+        { id: 'b6', name: "Água com ou sem gás", price: 4, desc: "" },
+        { id: 'b13', name: "Cerveja 600ml", price: 13, desc: "" }
+      ]}
+    ];
+
+    const getMenu = () => {
+      const saved = localStorage.getItem('raiz_menu');
+      return saved ? JSON.parse(saved) : defaultMenuCategories;
+    };
+
+    // --- COMPONENTE TELA INICIAL ---
+    function Home({ setRoute, setTableNumber }) {
+      const [adminPassword, setAdminPassword] = useState('');
+      const [error, setError] = useState('');
+
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#121212]">
+          <div className="bg-[#1e1e1e] p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
+            <img src="./Logo.png" alt="Logo RAIZ" className="h-32 mx-auto mb-6 object-contain" onError={handleImageError} />
+            <div style={{ display: 'none' }}>
+              <h1 className="text-5xl font-black text-[#d32f2f] tracking-tighter mb-1">RAIZ</h1>
+              <p className="text-gray-400 text-sm tracking-[0.3em] mb-8">XISERIA • CIA</p>
+            </div>
+            
+            <button onClick={() => { setTableNumber('1'); setRoute('client'); }}
+              className="w-full bg-[#d32f2f] hover:bg-red-700 text-white p-4 rounded-xl font-bold flex items-center justify-center gap-2 mb-4">
+              <IconPhone /> Simular Cliente (Mesa 1)
+            </button>
+
+            <div className="bg-[#2a2a2a] p-4 rounded-xl mt-6">
+              <div className="flex items-center justify-center gap-2 text-gray-300 mb-4 font-bold">
+                <IconChef /> Acesso da Cozinha
+              </div>
+              <input type="password" placeholder="Senha (1234)" 
+                className="w-full bg-[#121212] text-white border border-gray-700 p-3 rounded-lg mb-3 text-center"
+                value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} />
+              {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+              <button onClick={() => adminPassword === '1234' ? setRoute('admin') : setError('Senha incorreta!')} className="w-full bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-lg font-bold">
+                Entrar no Painel
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- COMPONENTE CLIENTE ---
+    function ClientMenu({ tableNumber, setRoute }) {
+      const [menuData, setMenuData] = useState(getMenu());
+      const [cart, setCart] = useState([]);
+      const [orderSent, setOrderSent] = useState(false);
+      const [showCartModal, setShowCartModal] = useState(false);
+      
+      const [foodModalItem, setFoodModalItem] = useState(null);
+      const [foodModalType, setFoodModalType] = useState('');
+      const [selectedAddons, setSelectedAddons] = useState([]);
+      const [itemObservation, setItemObservation] = useState('');
+
+      const [drinkModalItem, setDrinkModalItem] = useState(null);
+      const [drinkCopos, setDrinkCopos] = useState(1);
+      const [drinkGelo, setDrinkGelo] = useState('Com Gelo');
+      const [drinkLimao, setDrinkLimao] = useState('Com Limão');
+
+      const handleOpenItem = (item, catIdName) => {
+        if (catIdName === 'xis' || catIdName === 'mini-xis') {
+          setFoodModalType('xis');
+          setFoodModalItem(item);
+          setSelectedAddons([]);
+          setItemObservation('');
+        } else if (catIdName === 'hot-dog') {
+          setFoodModalType('hotdog');
+          setFoodModalItem(item);
+          setSelectedAddons([]);
+          setItemObservation('');
+        } else if (catIdName === 'bebidas') {
+          setDrinkModalItem(item);
+          setDrinkCopos(1);
+          setDrinkGelo('Com Gelo');
+          setDrinkLimao('Com Limão');
+        } else {
+          setCart([...cart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]);
+        }
+      };
+
+      const toggleAddon = (addon) => {
+        if (selectedAddons.find(a => a.id === addon.id)) {
+          setSelectedAddons(selectedAddons.filter(a => a.id !== addon.id));
+        } else {
+          setSelectedAddons([...selectedAddons, addon]);
+        }
+      };
+
+      const confirmFoodToCart = () => {
+        setCart([...cart, { ...foodModalItem, cartId: Date.now(), adicionais: selectedAddons, observation: itemObservation }]);
+        setFoodModalItem(null);
+      };
+
+      const confirmDrinkToCart = () => {
+        const drinkDetails = `${drinkCopos} copo(s), ${drinkGelo}, ${drinkLimao}`;
+        setCart([...cart, { ...drinkModalItem, cartId: Date.now(), adicionais: [], observation: drinkDetails }]);
+        setDrinkModalItem(null);
+      };
+
+      const removeFromCart = (cartId) => setCart(cart.filter(item => item.cartId !== cartId));
+
+      const getItemTotal = (item) => {
+        const adTotal = item.adicionais ? item.adicionais.reduce((sum, add) => sum + add.price, 0) : 0;
+        return item.price + adTotal;
+      };
+      const getCartTotal = () => cart.reduce((total, item) => total + getItemTotal(item), 0);
+
+      const sendOrder = () => {
+        if (cart.length === 0) return;
+        const dataObj = new Date();
+        const dateStr = dataObj.toISOString().split('T')[0]; // YYYY-MM-DD
+        
+        const newOrder = {
+          id: Math.random().toString(36).substr(2, 5).toUpperCase(),
+          table: tableNumber,
+          items: cart,
+          timestamp: Date.now(),
+          date: dateStr,
+          status: 'pendente'
+        };
+        const existingOrders = JSON.parse(localStorage.getItem('raiz_orders')) || [];
+        localStorage.setItem('raiz_orders', JSON.stringify([...existingOrders, newOrder]));
+        setShowCartModal(false);
+        setOrderSent(true);
+        setCart([]);
+      };
+
+      const scrollToCategory = (idName) => {
+        const element = document.getElementById(`cat-${idName}`);
+        if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
+      if (orderSent) return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#121212]">
+          <div className="bg-green-600 p-6 rounded-full mb-6"><IconCheck /></div>
+          <h2 className="text-3xl font-bold mb-2 text-white">Pedido Enviado!</h2>
+          <p className="text-gray-400 mb-8">A cozinha já está a preparar o seu pedido.</p>
+          <button onClick={() => setOrderSent(false)} className="bg-[#d32f2f] px-8 py-3 rounded-lg font-bold text-white">Novo pedido</button>
+        </div>
+      );
+
+      return (
+        <div className="pb-24 bg-[#121212]">
+          <div className="sticky top-0 z-30 bg-[#1a1a1a] shadow-lg border-b border-red-900">
+            <header className="p-3 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setRoute('home')} className="text-gray-400 hover:text-white transition-colors"><IconArrowLeft /></button>
+                <div className="flex items-center gap-2">
+                  <img src="./Logo.png" alt="RAIZ" className="h-10 object-contain" onError={handleImageError} />
+                  <div style={{ display: 'none' }}><h1 className="text-lg font-black text-[#d32f2f]">RAIZ</h1></div>
+                </div>
+              </div>
+              <div className="bg-[#2a2a2a] border border-gray-700 px-4 py-1.5 rounded-xl shadow-inner">
+                <span className="text-gray-400 text-xs uppercase tracking-wider block text-right">Local</span>
+                <span className="text-[#d32f2f] font-black text-base">Mesa {tableNumber}</span>
+              </div>
+            </header>
+            
+            <div className="flex overflow-x-auto py-3 px-4 gap-2 bg-[#121212] border-t border-gray-800 scrollbar-hide shadow-md">
+              {menuData.map((cat, idx) => (
+                <button key={idx} onClick={() => scrollToCategory(cat.idName)}
+                  className="whitespace-nowrap bg-[#2a2a2a] hover:bg-[#d32f2f] text-gray-200 hover:text-white px-4 py-2 rounded-full text-sm font-bold transition-colors">
+                  {cat.title}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-4 space-y-8 max-w-2xl mx-auto pt-6">
+            {menuData.map((cat, idx) => (
+              <div key={idx} id={`cat-${cat.idName}`} className="scroll-mt-32">
+                <h2 className="text-xl font-bold border-b-2 border-[#d32f2f] pb-2 mb-4 text-white uppercase tracking-wide">{cat.title}</h2>
+                <div className="space-y-4">
+                  {cat.items.map(item => (
+                    <div key={item.id} className="bg-[#1e1e1e] p-4 rounded-xl flex justify-between items-center shadow-lg border border-transparent hover:border-gray-700 transition-colors">
+                      <div className="flex-1 pr-4">
+                        <h3 className="font-bold text-lg leading-tight text-white">{item.name}</h3>
+                        {item.desc && <p className="text-gray-400 text-xs mt-1 leading-snug">{item.desc}</p>}
+                        <p className="text-[#d32f2f] font-bold mt-2 text-lg">R$ {Number(item.price).toFixed(2)}</p>
+                      </div>
+                      <button onClick={() => handleOpenItem(item, cat.idName)} className="bg-[#2a2a2a] text-white hover:bg-[#d32f2f] p-3 rounded-lg transition-colors"><IconPlus /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Modal Lanches */}
+          {foodModalItem && (
+            <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+              <div className="bg-[#1e1e1e] w-full max-w-md rounded-2xl p-6 shadow-2xl max-h-[80vh] overflow-y-auto border border-gray-800 flex flex-col">
+                <div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-[#d32f2f]">{foodModalItem.name}</h3>
+                    <p className="text-gray-400 text-sm">Personalize seu pedido</p>
+                  </div>
+                  <button onClick={() => setFoodModalItem(null)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
+                </div>
+                
+                <div className="space-y-3 mb-6 flex-1">
+                  <h4 className="text-white font-bold text-sm mb-2">Adicionais (+ R$)</h4>
+                  {(foodModalType === 'xis' ? xisAddonItems : hotdogAddonItems).map(addon => (
+                    <label key={addon.id} className="flex items-center justify-between bg-[#2a2a2a] p-3 rounded-lg cursor-pointer hover:bg-[#333] transition-colors">
+                      <div className="flex items-center gap-3">
+                        <input type="checkbox" className="w-5 h-5 accent-[#d32f2f]" checked={!!selectedAddons.find(a => a.id === addon.id)} onChange={() => toggleAddon(addon)} />
+                        <span className="font-bold text-white">{addon.name}</span>
+                      </div>
+                      <span className="text-[#d32f2f] font-bold">+ R$ {addon.price.toFixed(2)}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="border-t border-gray-700 pt-4 mb-6">
+                  <h4 className="text-white font-bold text-sm mb-2">Observações</h4>
+                  <textarea className="w-full bg-[#121212] text-white border border-gray-700 p-3 rounded-lg focus:outline-none focus:border-[#d32f2f]"
+                    rows="2" placeholder="Ex: Sem milho..." value={itemObservation} onChange={(e) => setItemObservation(e.target.value)}></textarea>
+                </div>
+                <button onClick={confirmFoodToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg transition-colors mt-auto">Confirmar e Adicionar</button>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Bebidas */}
+          {drinkModalItem && (
+            <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+              <div className="bg-[#1e1e1e] w-full max-w-md rounded-2xl p-6 shadow-2xl border border-gray-800 flex flex-col">
+                <div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-[#d32f2f]">{drinkModalItem.name}</h3>
+                  </div>
+                  <button onClick={() => setDrinkModalItem(null)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
+                </div>
+                <div className="space-y-5 mb-6">
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">Copos:</label>
+                    <div className="flex gap-3">
+                      {[1, 2, 3, 4].map(num => (
+                        <button key={num} onClick={() => setDrinkCopos(num)}
+                          className={`flex-1 py-2 rounded-lg font-bold transition-colors ${drinkCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>
+                          {num} {num === 1 ? 'Copo' : 'Copos'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
+                    <div className="flex gap-3">
+                      {['Com Gelo', 'Sem Gelo'].map(opt => (
+                        <button key={opt} onClick={() => setDrinkGelo(opt)}
+                          className={`flex-1 py-2 rounded-lg font-bold transition-colors ${drinkGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
+                    <div className="flex gap-3">
+                      {['Com Limão', 'Sem Limão'].map(opt => (
+                        <button key={opt} onClick={() => setDrinkLimao(opt)}
+                          className={`flex-1 py-2 rounded-lg font-bold transition-colors ${drinkLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <button onClick={confirmDrinkToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg">Adicionar</button>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Carrinho */}
+          {showCartModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+              <div className="bg-[#1e1e1e] w-full max-w-lg rounded-2xl p-6 shadow-2xl max-h-[85vh] overflow-y-auto border border-gray-800 flex flex-col">
+                <div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
+                  <div>
+                    <h3 className="text-2xl font-black text-white">Seu Carrinho</h3>
+                  </div>
+                  <button onClick={() => setShowCartModal(false)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
+                </div>
+                <div className="space-y-4 mb-6 flex-1 overflow-y-auto pr-1">
+                  {cart.length === 0 ? <p className="text-center text-gray-500 py-6">O seu carrinho está vazio.</p> : 
+                    cart.map(item => (
+                      <div key={item.cartId} className="bg-[#2a2a2a] p-4 rounded-xl flex justify-between items-start border border-gray-700">
+                        <div className="flex-1 pr-3">
+                          <h4 className="font-bold text-lg text-white">{item.name}</h4>
+                          <p className="text-[#d32f2f] font-bold">R$ {getItemTotal(item).toFixed(2)}</p>
+                          {item.adicionais && item.adicionais.length > 0 && (
+                            <div className="mt-1 text-sm text-gray-300">
+                              {item.adicionais.map((add, idx) => <p key={idx}>+ {add.name} (R$ {add.price.toFixed(2)})</p>)}
+                            </div>
+                          )}
+                          {item.observation && <p className="text-sm text-yellow-400 mt-1 italic font-bold">Obs: {item.observation}</p>}
+                        </div>
+                        <button onClick={() => removeFromCart(item.cartId)} className="text-red-400 p-2"><IconTrash /></button>
+                      </div>
+                    ))
+                  }
+                </div>
+                {cart.length > 0 && (
+                  <div className="border-t border-gray-700 pt-4 mt-auto">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-gray-400 font-bold">Total do Pedido:</span>
+                      <span className="text-2xl font-black text-white">R$ {getCartTotal().toFixed(2)}</span>
+                    </div>
+                    <button onClick={sendOrder} className="w-full bg-[#d32f2f] hover:bg-red-700 text-white font-bold py-4 rounded-xl text-lg flex items-center justify-center gap-2"><IconCart /> Enviar Pedido</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {cart.length > 0 && (
+            <div className="fixed bottom-0 w-full bg-[#1e1e1e] p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-20 border-t border-gray-800">
+              <div className="max-w-2xl mx-auto flex justify-between items-center">
+                <div>
+                  <p className="text-gray-400 text-sm">{cart.length} item(s)</p>
+                  <p className="font-bold text-xl text-white">R$ {getCartTotal().toFixed(2)}</p>
+                </div>
+                <button onClick={() => setShowCartModal(true)} className="bg-[#d32f2f] px-6 py-3 rounded-xl font-bold flex gap-2"><IconCart /> Ver Carrinho</button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- COMPONENTE ADMIN ---
+    function AdminPanel({ setRoute }) {
+      const [activeTab, setActiveTab] = useState('pedidos');
+      const [orders, setOrders] = useState([]);
+      const [now, setNow] = useState(Date.now());
+      
+      const [tables, setTables] = useState(() => JSON.parse(localStorage.getItem('raiz_tables')) || []);
+      const [newTableNumber, setNewTableNumber] = useState('');
+
+      const [menuData, setMenuData] = useState(getMenu());
+      const [editItem, setEditItem] = useState(null); // { catIdx, itemIdx, data }
+
+      // Historico
+      const dataHojeStr = new Date().toISOString().split('T')[0];
+      const [historyDate, setHistoryDate] = useState(dataHojeStr);
+
+      useEffect(() => {
+        const timer = setInterval(() => {
+          setNow(Date.now());
+          const saved = JSON.parse(localStorage.getItem('raiz_orders')) || [];
+          setOrders(saved);
+        }, 1000);
+        return () => clearInterval(timer);
+      }, []);
+
+      const pendingOrders = orders.filter(o => o.status === 'pendente');
+      const historyOrders = orders.filter(o => o.status === 'concluido' && o.date === historyDate);
+
+      const completeOrder = (id) => {
+        const saved = JSON.parse(localStorage.getItem('raiz_orders')) || [];
+        const updated = saved.map(o => o.id === id ? { ...o, status: 'concluido' } : o);
+        localStorage.setItem('raiz_orders', JSON.stringify(updated));
+        setOrders(updated);
+      };
+
+      const getTime = (ts) => {
+        const diff = Math.floor((now - ts) / 1000);
+        return `${Math.floor(diff / 60).toString().padStart(2, '0')}:${(diff % 60).toString().padStart(2, '0')}`;
+      };
+
+      const downloadQR = (tableNum, url) => {
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(url)}`;
+        fetch(qrUrl).then(response => response.blob()).then(blob => {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `QR_Mesa_${tableNum}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+      };
+
+      const handleAddTable = () => {
+        if (!newTableNumber) return;
+        const url = `${window.location.origin}${window.location.pathname}?mesa=${newTableNumber}`;
+        const updatedTables = [...tables, { number: newTableNumber, url }];
+        setTables(updatedTables);
+        localStorage.setItem('raiz_tables', JSON.stringify(updatedTables));
+        setNewTableNumber('');
+      };
+
+      const handleDeleteTable = (num) => {
+        const updated = tables.filter(t => t.number !== num);
+        setTables(updated);
+        localStorage.setItem('raiz_tables', JSON.stringify(updated));
+      };
+
+      const saveProductEdit = () => {
+        const newMenu = [...menuData];
+        newMenu[editItem.catIdx].items[editItem.itemIdx] = editItem.data;
+        setMenuData(newMenu);
+        localStorage.setItem('raiz_menu', JSON.stringify(newMenu));
+        setEditItem(null);
+      };
+
+      return (
+        <div className="pb-24 p-6 min-h-screen bg-[#121212]">
+          <header className="flex justify-between items-center mb-6 bg-[#1e1e1e] p-4 rounded-xl">
+            <button onClick={() => setRoute('home')} className="text-gray-400"><IconArrowLeft /></button>
+            <h1 className="text-2xl font-black text-white">ADMIN</h1>
+            <div className="bg-[#d32f2f] px-3 py-1 rounded-full text-sm font-bold animate-pulse text-white">Ativo</div>
+          </header>
+
+          {activeTab === 'pedidos' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pendingOrders.length === 0 ? <p className="col-span-full text-center text-gray-500 mt-10 text-xl">Nenhum pedido na fila.</p> : 
+                pendingOrders.map(order => (
+                  <div key={order.id} className="bg-[#1e1e1e] border-l-4 border-[#d32f2f] rounded-xl p-5 shadow-xl flex flex-col">
+                    <div className="flex justify-between border-b border-gray-700 pb-3 mb-3">
+                      <div><h2 className="text-2xl font-black text-white">Mesa {order.table}</h2><p className="text-gray-400 text-sm">#{order.id}</p></div>
+                      <div className="bg-[#2a2a2a] text-[#d32f2f] px-3 py-1 rounded-lg text-xl font-bold flex items-center gap-2"><IconClock /> {getTime(order.timestamp)}</div>
+                    </div>
+                    <div className="flex-1 space-y-4 mb-4">
+                      {order.items.map((item, i) => (
+                        <div key={i} className="text-white border-b border-gray-800 pb-2 last:border-0">
+                          <p className="font-bold text-lg">• 1x {item.name}</p>
+                          {item.adicionais && item.adicionais.length > 0 && <div className="mt-1">{item.adicionais.map((add, idx) => <p key={idx} className="text-sm text-gray-400 pl-4">+ {add.name}</p>)}</div>}
+                          {item.observation && <p className="text-sm text-yellow-500 pl-4 mt-1 font-bold italic">Obs: {item.observation}</p>}
+                        </div>
+                      ))}
+                    </div>
+                    <button onClick={() => completeOrder(order.id)} className="w-full bg-green-600 hover:bg-green-500 py-4 rounded-lg font-bold flex justify-center gap-2 text-lg text-white mt-auto"><IconCheckCircle /> Entregar</button>
+                  </div>
+                ))
+              }
+            </div>
+          )}
+
+          {activeTab === 'historico' && (
+            <div className="max-w-3xl mx-auto bg-[#1e1e1e] p-6 rounded-xl">
+              <div className="flex justify-between items-center border-b border-gray-700 pb-4 mb-6">
+                <h2 className="text-xl font-bold text-white">Histórico de Vendas</h2>
+                <input type="date" value={historyDate} onChange={e => setHistoryDate(e.target.value)} className="bg-[#121212] text-white border border-gray-700 p-2 rounded-lg" />
+              </div>
+              <div className="space-y-4">
+                {historyOrders.length === 0 ? <p className="text-center text-gray-500 py-6">Nenhum pedido concluído nesta data.</p> : 
+                  historyOrders.map(order => (
+                    <div key={order.id} className="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700 flex justify-between items-center">
+                      <div>
+                        <p className="font-bold text-white text-lg">Mesa {order.table} <span className="text-sm text-gray-400 ml-2">#{order.id}</span></p>
+                        <p className="text-sm text-gray-400">{order.items.length} itens</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-green-500 font-bold">Concluído</p>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'produtos' && (
+            <div className="max-w-3xl mx-auto bg-[#1e1e1e] p-6 rounded-xl">
+              <h2 className="text-xl font-bold border-b border-gray-700 pb-2 mb-4 text-white">Gestão do Cardápio</h2>
+              <p className="text-sm text-gray-400 mb-6">Edite nomes, descrições e valores dos produtos existentes.</p>
+              
+              {menuData.map((cat, catIdx) => (
+                <div key={catIdx} className="mb-6">
+                  <h3 className="text-lg font-bold text-[#d32f2f] mb-3">{cat.title}</h3>
+                  <div className="space-y-3">
+                    {cat.items.map((item, itemIdx) => (
+                      <div key={item.id} className="bg-[#2a2a2a] p-3 rounded-lg flex justify-between items-center border border-gray-700">
+                        <div>
+                          <p className="font-bold text-white">{item.name}</p>
+                          <p className="text-[#d32f2f] font-bold text-sm">R$ {Number(item.price).toFixed(2)}</p>
+                        </div>
+                        <button onClick={() => setEditItem({ catIdx, itemIdx, data: {...item} })} className="bg-gray-700 hover:bg-gray-600 p-2 rounded text-white"><IconEdit /></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {/* Modal Edição de Produto */}
+              {editItem && (
+                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+                  <div className="bg-[#1e1e1e] w-full max-w-md rounded-2xl p-6 shadow-2xl border border-gray-800">
+                    <h3 className="text-xl font-bold text-white mb-4">Editar Produto</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-gray-400 text-sm block mb-1">Nome:</label>
+                        <input type="text" value={editItem.data.name} onChange={e => setEditItem({...editItem, data: {...editItem.data, name: e.target.value}})} className="w-full bg-[#121212] text-white border border-gray-700 p-3 rounded-lg" />
+                      </div>
+                      <div>
+                        <label className="text-gray-400 text-sm block mb-1">Descrição:</label>
+                        <textarea value={editItem.data.desc || ''} onChange={e => setEditItem({...editItem, data: {...editItem.data, desc: e.target.value}})} className="w-full bg-[#121212] text-white border border-gray-700 p-3 rounded-lg" rows="2"></textarea>
+                      </div>
+                      <div>
+                        <label className="text-gray-400 text-sm block mb-1">Preço (R$):</label>
+                        <input type="number" value={editItem.data.price} onChange={e => setEditItem({...editItem, data: {...editItem.data, price: parseFloat(e.target.value) || 0}})} className="w-full bg-[#121212] text-white border border-gray-700 p-3 rounded-lg" />
+                      </div>
+                    </div>
+                    <div className="flex gap-3 mt-6">
+                      <button onClick={() => setEditItem(null)} className="flex-1 bg-gray-700 text-white font-bold py-3 rounded-lg">Cancelar</button>
+                      <button onClick={saveProductEdit} className="flex-1 bg-green-600 text-white font-bold py-3 rounded-lg">Salvar</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'mesas' && (
+            <div className="max-w-2xl mx-auto bg-[#1e1e1e] p-6 rounded-xl">
+              <h2 className="text-xl font-bold border-b border-gray-700 pb-2 mb-4 text-white">Cadastrar Mesas & QR Code</h2>
+              <div className="flex gap-2 mb-8">
+                <input type="number" placeholder="Número da Mesa" className="flex-1 bg-[#121212] text-white border border-gray-700 p-3 rounded-lg"
+                  value={newTableNumber} onChange={e => setNewTableNumber(e.target.value)} />
+                <button onClick={handleAddTable} className="bg-[#d32f2f] font-bold px-6 py-3 rounded-lg text-white">Gerar QR</button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {tables.map(t => (
+                  <div key={t.number} className="bg-[#2a2a2a] p-4 rounded-xl flex flex-col items-center border border-gray-700">
+                    <h3 className="font-black text-xl mb-3 text-white">Mesa {t.number}</h3>
+                    <div className="bg-white p-2 rounded-lg mb-3">
+                      <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.url)}`} alt={`QR Mesa ${t.number}`} />
+                    </div>
+                    <button onClick={() => downloadQR(t.number, t.url)} className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-lg mb-2">
+                      <IconDownload /> Baixar QR
+                    </button>
+                    <button onClick={() => handleDeleteTable(t.number)} className="text-red-500 hover:text-red-400 text-sm font-bold mt-1">Remover Mesa</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="fixed bottom-0 left-0 w-full bg-[#1a1a1a] border-t border-gray-800 flex justify-around p-3 z-20">
+            <button onClick={() => setActiveTab('pedidos')} className={`flex flex-col items-center gap-1 ${activeTab === 'pedidos' ? 'text-[#d32f2f]' : 'text-gray-500'}`}>
+              <IconList /><span className="text-xs font-bold">Pedidos</span>
+            </button>
+            <button onClick={() => setActiveTab('historico')} className={`flex flex-col items-center gap-1 ${activeTab === 'historico' ? 'text-[#d32f2f]' : 'text-gray-500'}`}>
+              <IconHistory /><span className="text-xs font-bold">Histórico</span>
+            </button>
+            <button onClick={() => setActiveTab('produtos')} className={`flex flex-col items-center gap-1 ${activeTab === 'produtos' ? 'text-[#d32f2f]' : 'text-gray-500'}`}>
+              <IconBox /><span className="text-xs font-bold">Produtos</span>
+            </button>
+            <button onClick={() => setActiveTab('mesas')} className={`flex flex-col items-center gap-1 ${activeTab === 'mesas' ? 'text-[#d32f2f]' : 'text-gray-500'}`}>
+              <IconQrCode /><span className="text-xs font-bold">Mesas & QR</span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const mesaParam = urlParams.get('mesa');
+      const [route, setRoute] = useState(mesaParam ? 'client' : 'home');
+      const [tableNumber, setTableNumber] = useState(mesaParam || '1');
+      return (
+        <div className="font-sans antialiased text-white">
+          {route === 'home' && <Home setRoute={setRoute} setTableNumber={setTableNumber} />}
+          {route === 'client' && <ClientMenu setRoute={setRoute} tableNumber={tableNumber} />}
+          {route === 'admin' && <AdminPanel setRoute={setRoute} />}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
