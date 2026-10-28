@@ -110,7 +110,22 @@
         { id: 'b4', name: "Refri 600ml", price: 9, desc: "" },
         { id: 'b5', name: "Refri 1Litro", price: 11, desc: "" },
         { id: 'b6', name: "Água com ou sem gás", price: 4, desc: "" },
-        { id: 'b13', name: "Cerveja 600ml", price: 13, desc: "" }
+        { id: 'b7', name: "Suco Del Valle lata", price: 7, desc: "" },
+        { id: 'b8', name: "Suco Del Valle pet", price: 6, desc: "" },
+        { id: 'b9', name: "Suco integral", price: 9, desc: "" },
+        { id: 'b10', name: "Chá gelado", price: 6, desc: "" },
+        { id: 'b11', name: "Aquarius", price: 7, desc: "" },
+        { id: 'b12', name: "Energético", price: 15, desc: "" },
+        { id: 'b13', name: "Cerveja 600ml", price: 13, desc: "" },
+        { id: 'b14', name: "Cerveja Estrella Galicia 600ml", price: 15, desc: "" },
+        { id: 'b15', name: "Cerveja Extra 600ml", price: 16, desc: "" },
+        { id: 'b16', name: "Cerveja Heineken 600ml", price: 18, desc: "" },
+        { id: 'b17', name: "Cerveja Latão", price: 10, desc: "" },
+        { id: 'b18', name: "Cerveja Latão Original", price: 12, desc: "" },
+        { id: 'b19', name: "Cerveja Long Neck", price: 12, desc: "" },
+        { id: 'b20', name: "Cerveja Long Neck Malzbier", price: 12, desc: "" },
+        { id: 'b21', name: "Cerveja Long Neck zero", price: 12, desc: "" },
+        { id: 'b22', name: "Taça de vinho", price: 8, desc: "" }
       ]}
     ];
 
@@ -160,11 +175,21 @@
       const [drinkCopos, setDrinkCopos] = useState(1);
       const [drinkGelo, setDrinkGelo] = useState('Com Gelo');
       const [drinkLimao, setDrinkLimao] = useState('Com Limão');
+      const [drinkMarca, setDrinkMarca] = useState('Coca-Cola');
+      const [drinkGas, setDrinkGas] = useState('Com Gás');
 
       const handleOpenItem = (item, catIdName) => {
         if (catIdName === 'xis' || catIdName === 'mini-xis') { setFoodModalType('xis'); setFoodModalItem(item); setSelectedAddons([]); setItemObservation(''); }
         else if (catIdName === 'hot-dog') { setFoodModalType('hotdog'); setFoodModalItem(item); setSelectedAddons([]); setItemObservation(''); }
-        else if (catIdName === 'bebidas') { setDrinkModalItem(item); setDrinkCopos(1); setDrinkGelo('Com Gelo'); setDrinkLimao('Com Limão'); }
+        else if (catIdName === 'bebidas') {
+          if (item.name.toLowerCase().includes('refri')) {
+            setDrinkModalItem(item); setDrinkMarca('Coca-Cola'); setDrinkCopos(1); setDrinkGelo('Com Gelo'); setDrinkLimao('Com Limão');
+          } else if (item.name.toLowerCase().includes('água')) {
+            setDrinkModalItem(item); setDrinkGas('Com Gás');
+          } else {
+            setCart([...cart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]);
+          }
+        }
         else { setCart([...cart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]); }
       };
 
@@ -174,7 +199,18 @@
       };
 
       const confirmFoodToCart = () => { setCart([...cart, { ...foodModalItem, cartId: Date.now(), adicionais: selectedAddons, observation: itemObservation }]); setFoodModalItem(null); };
-      const confirmDrinkToCart = () => { setCart([...cart, { ...drinkModalItem, cartId: Date.now(), adicionais: [], observation: `${drinkCopos} copo(s), ${drinkGelo}, ${drinkLimao}` }]); setDrinkModalItem(null); };
+      
+      const confirmDrinkToCart = () => {
+        let obsText = '';
+        if (drinkModalItem.name.toLowerCase().includes('refri')) {
+          obsText = `${drinkMarca}, ${drinkCopos} copo(s), ${drinkGelo}, ${drinkLimao}`;
+        } else if (drinkModalItem.name.toLowerCase().includes('água')) {
+          obsText = drinkGas;
+        }
+        setCart([...cart, { ...drinkModalItem, cartId: Date.now(), adicionais: [], observation: obsText }]);
+        setDrinkModalItem(null);
+      };
+
       const removeFromCart = (cartId) => setCart(cart.filter(item => item.cartId !== cartId));
       const getItemTotal = (item) => item.price + (item.adicionais ? item.adicionais.reduce((sum, add) => sum + add.price, 0) : 0);
       const getCartTotal = () => cart.reduce((total, item) => total + getItemTotal(item), 0);
@@ -268,20 +304,35 @@
                   <div><h3 className="text-xl font-bold text-[#d32f2f]">{drinkModalItem.name}</h3></div>
                   <button onClick={() => setDrinkModalItem(null)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
                 </div>
-                <div className="space-y-5 mb-6">
-                  <div>
-                    <label className="text-gray-300 font-bold text-sm block mb-2">Copos:</label>
-                    <div className="flex gap-3">{[1, 2, 3, 4].map(num => ( <button key={num} onClick={() => setDrinkCopos(num)} className={`flex-1 py-2 rounded-lg font-bold transition-colors ${drinkCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{num} {num === 1 ? 'Copo' : 'Copos'}</button> ))}</div>
+                
+                {drinkModalItem.name.toLowerCase().includes('refri') ? (
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <label className="text-gray-300 font-bold text-sm block mb-2">Marca:</label>
+                      <div className="grid grid-cols-3 gap-2">{['Coca-Cola', 'Pepsi', 'Fruk'].map(m => ( <button key={m} onClick={() => setDrinkMarca(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${drinkMarca === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))}</div>
+                    </div>
+                    <div>
+                      <label className="text-gray-300 font-bold text-sm block mb-2">Copos:</label>
+                      <div className="flex gap-2">{[1, 2, 3, 4].map(num => ( <button key={num} onClick={() => setDrinkCopos(num)} className={`flex-1 py-2 rounded-lg font-bold transition-colors text-xs ${drinkCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{num}</button> ))}</div>
+                    </div>
+                    <div>
+                      <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
+                      <div className="flex gap-2">{['Com Gelo', 'Sem Gelo'].map(opt => ( <button key={opt} onClick={() => setDrinkGelo(opt)} className={`flex-1 py-2 rounded-lg font-bold transition-colors text-xs ${drinkGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                    </div>
+                    <div>
+                      <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
+                      <div className="flex gap-2">{['Com Limão', 'Sem Limão'].map(opt => ( <button key={opt} onClick={() => setDrinkLimao(opt)} className={`flex-1 py-2 rounded-lg font-bold transition-colors text-xs ${drinkLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
-                    <div className="flex gap-3">{['Com Gelo', 'Sem Gelo'].map(opt => ( <button key={opt} onClick={() => setDrinkGelo(opt)} className={`flex-1 py-2 rounded-lg font-bold transition-colors ${drinkGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                ) : (
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <label className="text-gray-300 font-bold text-sm block mb-2">Tipo de Água:</label>
+                      <div className="flex gap-3">{['Com Gás', 'Sem Gás'].map(opt => ( <button key={opt} onClick={() => setDrinkGas(opt)} className={`flex-1 py-3 rounded-lg font-bold transition-colors ${drinkGas === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
-                    <div className="flex gap-3">{['Com Limão', 'Sem Limão'].map(opt => ( <button key={opt} onClick={() => setDrinkLimao(opt)} className={`flex-1 py-2 rounded-lg font-bold transition-colors ${drinkLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
-                  </div>
-                </div>
+                )}
+
                 <button onClick={confirmDrinkToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg">Adicionar</button>
               </div>
             </div>
@@ -356,6 +407,8 @@
       const [wCopos, setWCopos] = useState(1);
       const [wGelo, setWGelo] = useState('Com Gelo');
       const [wLimao, setWLimao] = useState('Com Limão');
+      const [wMarca, setWMarca] = useState('Coca-Cola');
+      const [wGas, setWGas] = useState('Com Gás');
 
       useEffect(() => {
         const timer = setInterval(() => { setNow(Date.now()); setOrders(JSON.parse(localStorage.getItem('raiz_orders')) || []); }, 1000);
@@ -365,14 +418,12 @@
       const pendingOrders = orders.filter(o => o.status === 'pendente');
       const historyOrders = orders.filter(o => o.status === 'concluido' && o.date === historyDate);
       
-      // Caixa exibe pedidos onde o pagamento está pendente
       const caixaOrders = orders.filter(o => o.pagamento === 'pendente' || !o.pagamento);
       const filteredCaixaOrders = caixaOrders.filter(o => {
         if (!cashFilter) return true;
         return String(o.table).toLowerCase().includes(cashFilter.toLowerCase());
       });
 
-      // Cozinha dá como entregue (muda status para concluido, permitindo ir para o histórico se pago)
       const completeOrder = (id) => {
         const updated = (JSON.parse(localStorage.getItem('raiz_orders')) || []).map(o => {
           if (o.id === id) {
@@ -384,7 +435,6 @@
         setOrders(updated);
       };
 
-      // Caixa apenas dá o pagamento como realizado (NÃO tira da cozinha)
       const payOrder = (id) => {
         const updated = (JSON.parse(localStorage.getItem('raiz_orders')) || []).map(o => {
           if (o.id === id) {
@@ -417,12 +467,32 @@
       const handleOpenWItem = (item, catIdName) => {
         if (catIdName === 'xis' || catIdName === 'mini-xis') { setWFoodType('xis'); setWFoodModal(item); setWAddons([]); setWObs(''); }
         else if (catIdName === 'hot-dog') { setWFoodType('hotdog'); setWFoodModal(item); setWAddons([]); setWObs(''); }
-        else if (catIdName === 'bebidas') { setWDrinkModal(item); setWCopos(1); setWGelo('Com Gelo'); setWLimao('Com Limão'); }
+        else if (catIdName === 'bebidas') {
+          if (item.name.toLowerCase().includes('refri')) {
+            setWDrinkModal(item); setWMarca('Coca-Cola'); setWCopos(1); setWGelo('Com Gelo'); setWLimao('Com Limão');
+          } else if (item.name.toLowerCase().includes('água')) {
+            setWDrinkModal(item); setWGas('Com Gás');
+          } else {
+            setWCart([...wCart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]);
+          }
+        }
         else { setWCart([...wCart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]); }
       };
+
       const toggleWAddon = (addon) => { if (wAddons.find(a => a.id === addon.id)) setWAddons(wAddons.filter(a => a.id !== addon.id)); else setWAddons([...wAddons, addon]); };
       const confirmWFoodToCart = () => { setWCart([...wCart, { ...wFoodModal, cartId: Date.now(), adicionais: wAddons, observation: wObs }]); setWFoodModal(null); };
-      const confirmWDrinkToCart = () => { setWCart([...wCart, { ...wDrinkModal, cartId: Date.now(), adicionais: [], observation: `${wCopos} copo(s), ${wGelo}, ${wLimao}` }]); setWDrinkModal(null); };
+      
+      const confirmWDrinkToCart = () => {
+        let obsText = '';
+        if (wDrinkModal.name.toLowerCase().includes('refri')) {
+          obsText = `${wMarca}, ${wCopos} copo(s), ${wGelo}, ${wLimao}`;
+        } else if (wDrinkModal.name.toLowerCase().includes('água')) {
+          obsText = wGas;
+        }
+        setWCart([...wCart, { ...wDrinkModal, cartId: Date.now(), adicionais: [], observation: obsText }]);
+        setWDrinkModal(null);
+      };
+
       const removeWCart = (cartId) => setWCart(wCart.filter(item => item.cartId !== cartId));
       
       const getOrderItemTotal = (item) => item.price + (item.adicionais ? item.adicionais.reduce((sum, add) => sum + add.price, 0) : 0);
@@ -478,7 +548,6 @@
             </div>
           )}
 
-          {/* ABA CAIXA */}
           {activeTab === 'caixa' && (
             <div className="max-w-4xl mx-auto pb-10">
               <div className="flex flex-col sm:flex-row justify-between items-center mb-6 bg-[#1e1e1e] p-4 rounded-xl border border-gray-700 gap-4">
@@ -519,7 +588,6 @@
                 }
               </div>
 
-              {/* MODAL / TELA FLUTUANTE DE PAGAMENTO */}
               {selectedOrderToPay && (
                 <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
                   <div className="bg-[#1e1e1e] w-full max-w-lg rounded-2xl p-6 shadow-2xl max-h-[85vh] overflow-y-auto border border-gray-700 flex flex-col">
@@ -618,11 +686,35 @@
                     <div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
                       <div><h3 className="text-xl font-bold text-[#d32f2f]">{wDrinkModal.name}</h3></div><button onClick={() => setWDrinkModal(null)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
                     </div>
-                    <div className="space-y-5 mb-6">
-                      <div><label className="text-gray-300 font-bold text-sm block mb-2">Copos:</label><div className="flex gap-3">{[1, 2, 3, 4].map(num => ( <button key={num} onClick={() => setWCopos(num)} className={`flex-1 py-2 rounded-lg font-bold ${wCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{num}</button> ))}</div></div>
-                      <div><label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label><div className="flex gap-3">{['Com Gelo', 'Sem Gelo'].map(opt => ( <button key={opt} onClick={() => setWGelo(opt)} className={`flex-1 py-2 rounded-lg font-bold ${wGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div></div>
-                      <div><label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label><div className="flex gap-3">{['Com Limão', 'Sem Limão'].map(opt => ( <button key={opt} onClick={() => setWLimao(opt)} className={`flex-1 py-2 rounded-lg font-bold ${wLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div></div>
-                    </div>
+
+                    {wDrinkModal.name.toLowerCase().includes('refri') ? (
+                      <div className="space-y-4 mb-6">
+                        <div>
+                          <label className="text-gray-300 font-bold text-sm block mb-2">Marca:</label>
+                          <div className="grid grid-cols-3 gap-2">{['Coca-Cola', 'Pepsi', 'Fruk'].map(m => ( <button key={m} onClick={() => setWMarca(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${wMarca === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))}</div>
+                        </div>
+                        <div>
+                          <label className="text-gray-300 font-bold text-sm block mb-2">Copos:</label>
+                          <div className="flex gap-2">{[1, 2, 3, 4].map(num => ( <button key={num} onClick={() => setWCopos(num)} className={`flex-1 py-2 rounded-lg font-bold text-xs ${wCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{num}</button> ))}</div>
+                        </div>
+                        <div>
+                          <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
+                          <div className="flex gap-2">{['Com Gelo', 'Sem Gelo'].map(opt => ( <button key={opt} onClick={() => setWGelo(opt)} className={`flex-1 py-2 rounded-lg font-bold text-xs ${wGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                        </div>
+                        <div>
+                          <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
+                          <div className="flex gap-2">{['Com Limão', 'Sem Limão'].map(opt => ( <button key={opt} onClick={() => setWLimao(opt)} className={`flex-1 py-2 rounded-lg font-bold text-xs ${wLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 mb-6">
+                        <div>
+                          <label className="text-gray-300 font-bold text-sm block mb-2">Tipo de Água:</label>
+                          <div className="flex gap-3">{['Com Gás', 'Sem Gás'].map(opt => ( <button key={opt} onClick={() => setWGas(opt)} className={`flex-1 py-3 rounded-lg font-bold ${wGas === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                        </div>
+                      </div>
+                    )}
+
                     <button onClick={confirmWDrinkToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg">Adicionar</button>
                   </div>
                 </div>
