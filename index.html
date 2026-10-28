@@ -175,17 +175,16 @@
       const [drinkCopos, setDrinkCopos] = useState(1);
       const [drinkGelo, setDrinkGelo] = useState('Com Gelo');
       const [drinkLimao, setDrinkLimao] = useState('Com Limão');
-      const [drinkMarca, setDrinkMarca] = useState('Coca-Cola');
-      const [drinkGas, setDrinkGas] = useState('Com Gás');
+      const [drinkOpcao, setDrinkOpcao] = useState('Coca-Cola');
 
       const handleOpenItem = (item, catIdName) => {
         if (catIdName === 'xis' || catIdName === 'mini-xis') { setFoodModalType('xis'); setFoodModalItem(item); setSelectedAddons([]); setItemObservation(''); }
         else if (catIdName === 'hot-dog') { setFoodModalType('hotdog'); setFoodModalItem(item); setSelectedAddons([]); setItemObservation(''); }
         else if (catIdName === 'bebidas') {
           if (item.name.toLowerCase().includes('refri')) {
-            setDrinkModalItem(item); setDrinkMarca('Coca-Cola'); setDrinkCopos(1); setDrinkGelo('Com Gelo'); setDrinkLimao('Com Limão');
+            setDrinkModalItem(item); setDrinkOpcao('Coca-Cola'); setDrinkCopos(1); setDrinkGelo('Com Gelo'); setDrinkLimao('Com Limão');
           } else if (item.name.toLowerCase().includes('água')) {
-            setDrinkModalItem(item); setDrinkGas('Com Gás');
+            setDrinkModalItem(item); setDrinkOpcao('Com Gás'); setDrinkCopos(1); setDrinkGelo('Com Gelo'); setDrinkLimao('Com Limão');
           } else {
             setCart([...cart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]);
           }
@@ -202,10 +201,8 @@
       
       const confirmDrinkToCart = () => {
         let obsText = '';
-        if (drinkModalItem.name.toLowerCase().includes('refri')) {
-          obsText = `${drinkMarca}, ${drinkCopos} copo(s), ${drinkGelo}, ${drinkLimao}`;
-        } else if (drinkModalItem.name.toLowerCase().includes('água')) {
-          obsText = drinkGas;
+        if (drinkModalItem.name.toLowerCase().includes('refri') || drinkModalItem.name.toLowerCase().includes('água')) {
+          obsText = `${drinkOpcao}, ${drinkCopos} copo(s), ${drinkGelo}, ${drinkLimao}`;
         }
         setCart([...cart, { ...drinkModalItem, cartId: Date.now(), adicionais: [], observation: obsText }]);
         setDrinkModalItem(null);
@@ -305,33 +302,32 @@
                   <button onClick={() => setDrinkModalItem(null)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
                 </div>
                 
-                {drinkModalItem.name.toLowerCase().includes('refri') ? (
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <label className="text-gray-300 font-bold text-sm block mb-2">Marca:</label>
-                      <div className="grid grid-cols-3 gap-2">{['Coca-Cola', 'Pepsi', 'Fruk'].map(m => ( <button key={m} onClick={() => setDrinkMarca(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${drinkMarca === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))}</div>
-                    </div>
-                    <div>
-                      <label className="text-gray-300 font-bold text-sm block mb-2">Copos:</label>
-                      <div className="flex gap-2">{[1, 2, 3, 4].map(num => ( <button key={num} onClick={() => setDrinkCopos(num)} className={`flex-1 py-2 rounded-lg font-bold transition-colors text-xs ${drinkCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{num}</button> ))}</div>
-                    </div>
-                    <div>
-                      <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
-                      <div className="flex gap-2">{['Com Gelo', 'Sem Gelo'].map(opt => ( <button key={opt} onClick={() => setDrinkGelo(opt)} className={`flex-1 py-2 rounded-lg font-bold transition-colors text-xs ${drinkGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
-                    </div>
-                    <div>
-                      <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
-                      <div className="flex gap-2">{['Com Limão', 'Sem Limão'].map(opt => ( <button key={opt} onClick={() => setDrinkLimao(opt)} className={`flex-1 py-2 rounded-lg font-bold transition-colors text-xs ${drinkLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">
+                      {drinkModalItem.name.toLowerCase().includes('refri') ? 'Marca:' : 'Tipo:'}
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {drinkModalItem.name.toLowerCase().includes('refri') ? 
+                        ['Coca-Cola', 'Pepsi', 'Fruk'].map(m => ( <button key={m} onClick={() => setDrinkOpcao(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${drinkOpcao === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))
+                        :
+                        ['Com Gás', 'Sem Gás'].map(opt => ( <button key={opt} onClick={() => setDrinkOpcao(opt)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${drinkOpcao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))
+                      }
                     </div>
                   </div>
-                ) : (
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <label className="text-gray-300 font-bold text-sm block mb-2">Tipo de Água:</label>
-                      <div className="flex gap-3">{['Com Gás', 'Sem Gás'].map(opt => ( <button key={opt} onClick={() => setDrinkGas(opt)} className={`flex-1 py-3 rounded-lg font-bold transition-colors ${drinkGas === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
-                    </div>
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">Copos:</label>
+                    <div className="flex gap-2">{[1, 2, 3, 4].map(num => ( <button key={num} onClick={() => setDrinkCopos(num)} className={`flex-1 py-2 rounded-lg font-bold transition-colors text-xs ${drinkCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{num}</button> ))}</div>
                   </div>
-                )}
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
+                    <div className="flex gap-2">{['Com Gelo', 'Sem Gelo'].map(opt => ( <button key={opt} onClick={() => setDrinkGelo(opt)} className={`flex-1 py-2 rounded-lg font-bold transition-colors text-xs ${drinkGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                  </div>
+                  <div>
+                    <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
+                    <div className="flex gap-2">{['Com Limão', 'Sem Limão'].map(opt => ( <button key={opt} onClick={() => setDrinkLimao(opt)} className={`flex-1 py-2 rounded-lg font-bold transition-colors text-xs ${drinkLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                  </div>
+                </div>
 
                 <button onClick={confirmDrinkToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg">Adicionar</button>
               </div>
@@ -392,7 +388,6 @@
       const [editItem, setEditItem] = useState(null);
       const [historyDate, setHistoryDate] = useState(new Date().toISOString().split('T')[0]);
 
-      // Estados Caixa
       const [cashFilter, setCashFilter] = useState('');
       const [selectedOrderToPay, setSelectedOrderToPay] = useState(null);
 
@@ -403,12 +398,12 @@
       const [wFoodType, setWFoodType] = useState('');
       const [wAddons, setWAddons] = useState([]);
       const [wObs, setWObs] = useState('');
+      
       const [wDrinkModal, setWDrinkModal] = useState(null);
       const [wCopos, setWCopos] = useState(1);
       const [wGelo, setWGelo] = useState('Com Gelo');
       const [wLimao, setWLimao] = useState('Com Limão');
-      const [wMarca, setWMarca] = useState('Coca-Cola');
-      const [wGas, setWGas] = useState('Com Gás');
+      const [wOpcao, setWOpcao] = useState('Coca-Cola');
 
       useEffect(() => {
         const timer = setInterval(() => { setNow(Date.now()); setOrders(JSON.parse(localStorage.getItem('raiz_orders')) || []); }, 1000);
@@ -469,9 +464,9 @@
         else if (catIdName === 'hot-dog') { setWFoodType('hotdog'); setWFoodModal(item); setWAddons([]); setWObs(''); }
         else if (catIdName === 'bebidas') {
           if (item.name.toLowerCase().includes('refri')) {
-            setWDrinkModal(item); setWMarca('Coca-Cola'); setWCopos(1); setWGelo('Com Gelo'); setWLimao('Com Limão');
+            setWDrinkModal(item); setWOpcao('Coca-Cola'); setWCopos(1); setWGelo('Com Gelo'); setWLimao('Com Limão');
           } else if (item.name.toLowerCase().includes('água')) {
-            setWDrinkModal(item); setWGas('Com Gás');
+            setWDrinkModal(item); setWOpcao('Com Gás'); setWCopos(1); setWGelo('Com Gelo'); setWLimao('Com Limão');
           } else {
             setWCart([...wCart, { ...item, cartId: Date.now(), adicionais: [], observation: '' }]);
           }
@@ -484,10 +479,8 @@
       
       const confirmWDrinkToCart = () => {
         let obsText = '';
-        if (wDrinkModal.name.toLowerCase().includes('refri')) {
-          obsText = `${wMarca}, ${wCopos} copo(s), ${wGelo}, ${wLimao}`;
-        } else if (wDrinkModal.name.toLowerCase().includes('água')) {
-          obsText = wGas;
+        if (wDrinkModal.name.toLowerCase().includes('refri') || wDrinkModal.name.toLowerCase().includes('água')) {
+          obsText = `${wOpcao}, ${wCopos} copo(s), ${wGelo}, ${wLimao}`;
         }
         setWCart([...wCart, { ...wDrinkModal, cartId: Date.now(), adicionais: [], observation: obsText }]);
         setWDrinkModal(null);
@@ -687,33 +680,32 @@
                       <div><h3 className="text-xl font-bold text-[#d32f2f]">{wDrinkModal.name}</h3></div><button onClick={() => setWDrinkModal(null)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
                     </div>
 
-                    {wDrinkModal.name.toLowerCase().includes('refri') ? (
-                      <div className="space-y-4 mb-6">
-                        <div>
-                          <label className="text-gray-300 font-bold text-sm block mb-2">Marca:</label>
-                          <div className="grid grid-cols-3 gap-2">{['Coca-Cola', 'Pepsi', 'Fruk'].map(m => ( <button key={m} onClick={() => setWMarca(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${wMarca === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))}</div>
-                        </div>
-                        <div>
-                          <label className="text-gray-300 font-bold text-sm block mb-2">Copos:</label>
-                          <div className="flex gap-2">{[1, 2, 3, 4].map(num => ( <button key={num} onClick={() => setWCopos(num)} className={`flex-1 py-2 rounded-lg font-bold text-xs ${wCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{num}</button> ))}</div>
-                        </div>
-                        <div>
-                          <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
-                          <div className="flex gap-2">{['Com Gelo', 'Sem Gelo'].map(opt => ( <button key={opt} onClick={() => setWGelo(opt)} className={`flex-1 py-2 rounded-lg font-bold text-xs ${wGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
-                        </div>
-                        <div>
-                          <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
-                          <div className="flex gap-2">{['Com Limão', 'Sem Limão'].map(opt => ( <button key={opt} onClick={() => setWLimao(opt)} className={`flex-1 py-2 rounded-lg font-bold text-xs ${wLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                    <div className="space-y-4 mb-6">
+                      <div>
+                        <label className="text-gray-300 font-bold text-sm block mb-2">
+                          {wDrinkModal.name.toLowerCase().includes('refri') ? 'Marca:' : 'Tipo:'}
+                        </label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {wDrinkModal.name.toLowerCase().includes('refri') ? 
+                            ['Coca-Cola', 'Pepsi', 'Fruk'].map(m => ( <button key={m} onClick={() => setWOpcao(m)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${wOpcao === m ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{m}</button> ))
+                            :
+                            ['Com Gás', 'Sem Gás'].map(opt => ( <button key={opt} onClick={() => setWOpcao(opt)} className={`py-2 rounded-lg font-bold transition-colors text-xs ${wOpcao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))
+                          }
                         </div>
                       </div>
-                    ) : (
-                      <div className="space-y-4 mb-6">
-                        <div>
-                          <label className="text-gray-300 font-bold text-sm block mb-2">Tipo de Água:</label>
-                          <div className="flex gap-3">{['Com Gás', 'Sem Gás'].map(opt => ( <button key={opt} onClick={() => setWGas(opt)} className={`flex-1 py-3 rounded-lg font-bold ${wGas === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
-                        </div>
+                      <div>
+                        <label className="text-gray-300 font-bold text-sm block mb-2">Copos:</label>
+                        <div className="flex gap-2">{[1, 2, 3, 4].map(num => ( <button key={num} onClick={() => setWCopos(num)} className={`flex-1 py-2 rounded-lg font-bold text-xs ${wCopos === num ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{num}</button> ))}</div>
                       </div>
-                    )}
+                      <div>
+                        <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
+                        <div className="flex gap-2">{['Com Gelo', 'Sem Gelo'].map(opt => ( <button key={opt} onClick={() => setWGelo(opt)} className={`flex-1 py-2 rounded-lg font-bold text-xs ${wGelo === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                      </div>
+                      <div>
+                        <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
+                        <div className="flex gap-2">{['Com Limão', 'Sem Limão'].map(opt => ( <button key={opt} onClick={() => setWLimao(opt)} className={`flex-1 py-2 rounded-lg font-bold text-xs ${wLimao === opt ? 'bg-[#d32f2f] text-white' : 'bg-[#2a2a2a] text-gray-300'}`}>{opt}</button> ))}</div>
+                      </div>
+                    </div>
 
                     <button onClick={confirmWDrinkToCart} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl text-lg">Adicionar</button>
                   </div>
