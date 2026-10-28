@@ -31,13 +31,13 @@
     const IconCheckCircle = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>;
     const IconList = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>;
     const IconQrCode = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
+    const IconTrash = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
 
     const handleImageError = (e) => {
       e.target.style.display = 'none';
       e.target.nextSibling.style.display = 'block';
     };
 
-    // Adicionais específicos para Xis (com bife, sem salsicha)
     const xisAddonItems = [
       { id: 'ad1', name: 'Ovo', price: 2 },
       { id: 'ad2', name: 'Catupiry', price: 2 },
@@ -47,7 +47,6 @@
       { id: 'ad7', name: 'Bife de Hambúrguer', price: 9 }
     ];
 
-    // Adicionais específicos para Hot Dog (com salsicha, sem bife)
     const hotdogAddonItems = [
       { id: 'ad1', name: 'Ovo', price: 2 },
       { id: 'ad2', name: 'Catupiry', price: 2 },
@@ -175,10 +174,11 @@
     function ClientMenu({ tableNumber, setRoute }) {
       const [cart, setCart] = useState([]);
       const [orderSent, setOrderSent] = useState(false);
-      
-      // Modais
+      const [showCartModal, setShowCartModal] = useState(false); // Modal do carrinho
+
+      // Modais de Item
       const [foodModalItem, setFoodModalItem] = useState(null);
-      const [foodModalType, setFoodModalType] = useState(''); // 'xis' ou 'hotdog'
+      const [foodModalType, setFoodModalType] = useState('');
       const [selectedAddons, setSelectedAddons] = useState([]);
       const [itemObservation, setItemObservation] = useState('');
 
@@ -227,12 +227,19 @@
         setDrinkModalItem(null);
       };
 
-      const getCartTotal = () => cart.reduce((total, item) => {
+      const removeFromCart = (cartId) => {
+        setCart(cart.filter(item => item.cartId !== cartId));
+      };
+
+      const getItemTotal = (item) => {
         const adTotal = item.adicionais ? item.adicionais.reduce((sum, add) => sum + add.price, 0) : 0;
-        return total + item.price + adTotal;
-      }, 0);
+        return item.price + adTotal;
+      };
+
+      const getCartTotal = () => cart.reduce((total, item) => total + getItemTotal(item), 0);
 
       const sendOrder = () => {
+        if (cart.length === 0) return;
         const newOrder = {
           id: Math.random().toString(36).substr(2, 5).toUpperCase(),
           table: tableNumber,
@@ -242,6 +249,7 @@
         };
         const existingOrders = JSON.parse(localStorage.getItem('raiz_orders')) || [];
         localStorage.setItem('raiz_orders', JSON.stringify([...existingOrders, newOrder]));
+        setShowCartModal(false);
         setOrderSent(true);
         setCart([]);
       };
@@ -314,11 +322,10 @@
             ))}
           </div>
 
-          {/* Modal de Adicionais para Lanches (Xis / Hot Dog) */}
+          {/* Modal de Adicionais para Lanches */}
           {foodModalItem && (
             <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
               <div className="bg-[#1e1e1e] w-full max-w-md rounded-2xl p-6 shadow-2xl max-h-[80vh] overflow-y-auto border border-gray-800 flex flex-col">
-                
                 <div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
                   <div>
                     <h3 className="text-xl font-bold text-[#d32f2f]">{foodModalItem.name}</h3>
@@ -360,7 +367,7 @@
             </div>
           )}
 
-          {/* Modal de Opções para Bebidas (Copos, Gelo, Limão) */}
+          {/* Modal de Opções para Bebidas */}
           {drinkModalItem && (
             <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
               <div className="bg-[#1e1e1e] w-full max-w-md rounded-2xl p-6 shadow-2xl border border-gray-800 flex flex-col">
@@ -373,7 +380,6 @@
                 </div>
 
                 <div className="space-y-5 mb-6">
-                  {/* Número de Copos */}
                   <div>
                     <label className="text-gray-300 font-bold text-sm block mb-2">Número de Copos:</label>
                     <div className="flex gap-3">
@@ -386,7 +392,6 @@
                     </div>
                   </div>
 
-                  {/* Gelo */}
                   <div>
                     <label className="text-gray-300 font-bold text-sm block mb-2">Gelo:</label>
                     <div className="flex gap-3">
@@ -399,7 +404,6 @@
                     </div>
                   </div>
 
-                  {/* Limão */}
                   <div>
                     <label className="text-gray-300 font-bold text-sm block mb-2">Limão:</label>
                     <div className="flex gap-3">
@@ -420,15 +424,76 @@
             </div>
           )}
 
+          {/* Modal de Visualização do Carrinho */}
+          {showCartModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+              <div className="bg-[#1e1e1e] w-full max-w-lg rounded-2xl p-6 shadow-2xl max-h-[85vh] overflow-y-auto border border-gray-800 flex flex-col">
+                <div className="flex justify-between items-start border-b border-gray-700 pb-4 mb-4">
+                  <div>
+                    <h3 className="text-2xl font-black text-white">Seu Carrinho</h3>
+                    <p className="text-gray-400 text-sm">Mesa {tableNumber}</p>
+                  </div>
+                  <button onClick={() => setShowCartModal(false)} className="text-gray-500 hover:text-white text-3xl leading-none">&times;</button>
+                </div>
+
+                <div className="space-y-4 mb-6 flex-1 overflow-y-auto pr-1">
+                  {cart.length === 0 ? (
+                    <p className="text-center text-gray-500 py-6">O seu carrinho está vazio.</p>
+                  ) : (
+                    cart.map(item => (
+                      <div key={item.cartId} className="bg-[#2a2a2a] p-4 rounded-xl flex justify-between items-start border border-gray-700">
+                        <div className="flex-1 pr-3">
+                          <h4 className="font-bold text-lg text-white">{item.name}</h4>
+                          <p className="text-[#d32f2f] font-bold">R$ {getItemTotal(item).toFixed(2)}</p>
+                          
+                          {item.adicionais && item.adicionais.length > 0 && (
+                            <div className="mt-1 text-sm text-gray-300">
+                              {item.adicionais.map((add, idx) => (
+                                <p key={idx}>+ {add.name} (R$ {add.price.toFixed(2)})</p>
+                              ))}
+                            </div>
+                          )}
+
+                          {item.observation && (
+                            <p className="text-sm text-yellow-400 mt-1 italic font-bold">
+                              Obs: {item.observation}
+                            </p>
+                          )}
+                        </div>
+
+                        <button onClick={() => removeFromCart(item.cartId)} className="text-red-400 hover:text-red-300 p-2">
+                          <IconTrash />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {cart.length > 0 && (
+                  <div className="border-t border-gray-700 pt-4 mt-auto">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-gray-400 font-bold">Total do Pedido:</span>
+                      <span className="text-2xl font-black text-white">R$ {getCartTotal().toFixed(2)}</span>
+                    </div>
+                    <button onClick={sendOrder} className="w-full bg-[#d32f2f] hover:bg-red-700 text-white font-bold py-4 rounded-xl text-lg transition-colors flex items-center justify-center gap-2">
+                      <IconCart /> Enviar Pedido para a Cozinha
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Barra Flutuante Inferior para Aceder ao Carrinho */}
           {cart.length > 0 && (
-            <div className="fixed bottom-0 w-full bg-[#1e1e1e] p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-20">
+            <div className="fixed bottom-0 w-full bg-[#1e1e1e] p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-20 border-t border-gray-800">
               <div className="max-w-2xl mx-auto flex justify-between items-center">
                 <div>
-                  <p className="text-gray-400 text-sm">{cart.length} item(s)</p>
+                  <p className="text-gray-400 text-sm">{cart.length} item(s) no carrinho</p>
                   <p className="font-bold text-xl text-white">R$ {getCartTotal().toFixed(2)}</p>
                 </div>
-                <button onClick={sendOrder} className="bg-[#d32f2f] hover:bg-red-700 px-6 py-3 rounded-xl font-bold flex gap-2 text-white transition-colors">
-                  <IconCart /> Enviar Pedido
+                <button onClick={() => setShowCartModal(true)} className="bg-[#d32f2f] hover:bg-red-700 px-6 py-3 rounded-xl font-bold flex gap-2 text-white transition-colors">
+                  <IconCart /> Visualizar Carrinho
                 </button>
               </div>
             </div>
